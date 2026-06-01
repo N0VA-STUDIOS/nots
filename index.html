@@ -1,636 +1,1403 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bloc de Notas</title>
+<title>Notas Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#f8f7f4;--surface:#fff;--surface2:#f1f0eb;
-  --border:#e0ddd5;--border2:#c8c5bc;
-  --text:#1a1a18;--text2:#6b6a66;--text3:#9e9d99;
-  --accent:#7f77dd;--accent-bg:#eeedfe;--accent-text:#3c3489;
-  --green:#3b6d11;--green-bg:#eaf3de;
-  --amber:#854f0b;--amber-bg:#faeeda;
-  --red:#a32d2d;--red-bg:#fcebeb;
-  --teal:#0f6e56;--teal-bg:#e1f5ee;
-  --radius:10px;--radius-sm:6px;
+/* ============================================================
+   TOKENS & TEMAS
+   ============================================================ */
+:root,[data-theme="light"]{
+  --bg:#F7F6F3;--bg2:#EDECE9;--bg3:#E3E2DE;
+  --surface:#FFFFFF;--surface2:#F7F6F3;--surface3:#EDECE9;
+  --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.14);
+  --text:#1A1A18;--text2:#6B6A66;--text3:#A8A7A2;
+  --accent:#6B5CE7;--accent2:#8B7CF8;--accent-bg:rgba(107,92,231,.10);--accent-text:#4A3FBF;
+  --green:#22863A;--green-bg:#E6F4EA;
+  --amber:#B45309;--amber-bg:#FEF3C7;
+  --red:#B91C1C;--red-bg:#FEE2E2;
+  --teal:#0F766E;--teal-bg:#CCFBF1;
+  --star:#D97706;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04);
+  --shadow-lg:0 8px 30px rgba(0,0,0,.10);
+  --radius:12px;--radius-sm:8px;--radius-xs:5px;
+  --font:'Geist',system-ui,sans-serif;--font-mono:'Geist Mono',monospace;
+  --sidebar-w:260px;
+  --transition:.18s cubic-bezier(.4,0,.2,1);
 }
-@media(prefers-color-scheme:dark){
-  :root{
-    --bg:#1a1a18;--surface:#242422;--surface2:#2e2e2b;
-    --border:#3a3a36;--border2:#4a4a46;
-    --text:#f0efea;--text2:#a8a7a2;--text3:#6b6a66;
-    --accent:#afa9ec;--accent-bg:#26215c;--accent-text:#cecbf6;
-    --green:#c0dd97;--green-bg:#173404;
-    --amber:#fac775;--amber-bg:#412402;
-    --red:#f7c1c1;--red-bg:#501313;
-    --teal:#9fe1cb;--teal-bg:#04342c;
-  }
+[data-theme="dark"]{
+  --bg:#1C1C1A;--bg2:#242422;--bg3:#2E2E2B;
+  --surface:#242422;--surface2:#2E2E2B;--surface3:#3A3A36;
+  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.14);
+  --text:#F0EFEA;--text2:#A8A7A2;--text3:#6B6A66;
+  --accent:#8B7CF8;--accent2:#A89FFB;--accent-bg:rgba(139,124,248,.14);--accent-text:#C4BCFB;
+  --green:#86EFAC;--green-bg:rgba(134,239,172,.12);
+  --amber:#FCD34D;--amber-bg:rgba(252,211,77,.12);
+  --red:#FCA5A5;--red-bg:rgba(252,165,165,.12);
+  --teal:#5EEAD4;--teal-bg:rgba(94,234,212,.12);
+  --star:#FCD34D;
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.2);
+  --shadow-lg:0 8px 30px rgba(0,0,0,.4);
 }
-body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;font-size:14px}
-.app-bar{background:var(--surface);border-bottom:0.5px solid var(--border);padding:0 1rem;display:flex;align-items:center;gap:0.5rem;height:52px;position:sticky;top:0;z-index:100}
-.app-title{font-size:16px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:8px;margin-right:auto}
-.app-title i{color:var(--accent);font-size:20px}
-.btn{background:transparent;border:0.5px solid var(--border2);border-radius:var(--radius-sm);padding:6px 12px;color:var(--text);cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:6px;transition:background .15s,transform .1s;white-space:nowrap}
-.btn:hover{background:var(--surface2)}
-.btn:active{transform:scale(0.97)}
-.btn-accent{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-text)}
+[data-theme="amoled"]{
+  --bg:#000000;--bg2:#0A0A0A;--bg3:#111111;
+  --surface:#0A0A0A;--surface2:#111111;--surface3:#1A1A1A;
+  --border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.12);
+  --text:#FFFFFF;--text2:#9CA3AF;--text3:#4B5563;
+  --accent:#A78BFA;--accent2:#C4B5FD;--accent-bg:rgba(167,139,250,.14);--accent-text:#DDD6FE;
+  --green:#4ADE80;--green-bg:rgba(74,222,128,.10);
+  --amber:#FBBF24;--amber-bg:rgba(251,191,36,.10);
+  --red:#F87171;--red-bg:rgba(248,113,113,.10);
+  --teal:#34D399;--teal-bg:rgba(52,211,153,.10);
+  --star:#FBBF24;
+  --shadow:0 1px 3px rgba(0,0,0,.8),0 4px 12px rgba(0,0,0,.6);
+  --shadow-lg:0 8px 30px rgba(0,0,0,.9);
+}
+[data-theme="purple"]{
+  --bg:#F5F3FF;--bg2:#EDE9FE;--bg3:#DDD6FE;
+  --surface:#FFFFFF;--surface2:#F5F3FF;--surface3:#EDE9FE;
+  --border:rgba(109,40,217,.10);--border2:rgba(109,40,217,.18);
+  --text:#1E1333;--text2:#6D4DA0;--text3:#A78BFA;
+  --accent:#7C3AED;--accent2:#9D5CF8;--accent-bg:rgba(124,58,237,.12);--accent-text:#5B21B6;
+  --green:#059669;--green-bg:#D1FAE5;
+  --amber:#D97706;--amber-bg:#FEF3C7;
+  --red:#DC2626;--red-bg:#FEE2E2;
+  --teal:#0891B2;--teal-bg:#CFFAFE;
+  --star:#D97706;
+  --shadow:0 1px 3px rgba(109,40,217,.08),0 4px 12px rgba(109,40,217,.06);
+  --shadow-lg:0 8px 30px rgba(109,40,217,.14);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%;font-size:14px}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--text);
+  min-height:100vh;display:flex;flex-direction:column;
+  transition:background var(--transition),color var(--transition);
+  overflow:hidden;
+}
+::selection{background:var(--accent-bg);color:var(--accent-text)}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+h1,h2,h3{font-weight:600;letter-spacing:-.02em}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{
+  background:transparent;border:1px solid var(--border2);
+  border-radius:var(--radius-sm);padding:6px 12px;color:var(--text);
+  cursor:pointer;font-size:13px;font-family:var(--font);
+  display:inline-flex;align-items:center;gap:6px;
+  transition:background var(--transition),transform var(--transition),box-shadow var(--transition),border-color var(--transition);
+  white-space:nowrap;line-height:1;font-weight:450;
+  position:relative;overflow:hidden;
+}
+.btn::after{
+  content:'';position:absolute;inset:0;background:transparent;
+  transition:background var(--transition);
+}
+.btn:hover{background:var(--surface2);border-color:var(--border2)}
+.btn:active{transform:scale(.97)}
+.btn-accent{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+.btn-accent:hover{background:var(--accent2);border-color:var(--accent2);box-shadow:0 0 0 3px var(--accent-bg)}
+.btn-ghost{border-color:transparent}
+.btn-ghost:hover{background:var(--surface2);border-color:var(--border)}
 .btn-danger{background:var(--red-bg);border-color:var(--red);color:var(--red)}
-.btn-sm{padding:4px 9px;font-size:12px}
-.btn i{font-size:15px}
-.layout{display:flex;flex:1;min-height:0;height:calc(100vh - 52px)}
-.sidebar{width:240px;min-width:240px;background:var(--surface);border-right:0.5px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-.sidebar-header{padding:12px;border-bottom:0.5px solid var(--border);display:flex;flex-direction:column;gap:8px}
-.search-box{background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;display:flex;align-items:center;gap:6px;color:var(--text2)}
-.search-box input{background:none;border:none;outline:none;color:var(--text);font-size:13px;flex:1;width:100%}
-.search-box input::placeholder{color:var(--text3)}
-.notes-list{flex:1;overflow-y:auto;padding:8px}
-.note-item{padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;margin-bottom:4px;border:0.5px solid transparent;transition:background .15s}
-.note-item:hover{background:var(--surface2)}
-.note-item.active{background:var(--accent-bg);border-color:var(--accent)}
-.note-item-title{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.note-item-preview{font-size:12px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-.note-item-meta{font-size:11px;color:var(--text3);margin-top:4px;display:flex;align-items:center;gap:4px}
-.tag-badge{font-size:10px;padding:2px 7px;border-radius:999px;font-weight:500}
-.tag-nota{background:var(--accent-bg);color:var(--accent-text)}
-.tag-tabla{background:var(--teal-bg);color:var(--teal)}
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
-.editor-area{flex:1;overflow-y:auto;padding:2rem}
-.editor-wrap{max-width:780px;margin:0 auto;background:var(--surface);border-radius:var(--radius);border:0.5px solid var(--border);overflow:hidden}
-.note-title-input{width:100%;background:none;border:none;outline:none;font-size:22px;font-weight:500;color:var(--text);padding:1.25rem 1.5rem 0.75rem;border-bottom:0.5px solid var(--border)}
+.btn-sm{padding:4px 9px;font-size:12px;border-radius:var(--radius-xs)}
+.btn-xs{padding:2px 7px;font-size:11px;border-radius:var(--radius-xs)}
+.btn-icon{padding:6px;border-radius:var(--radius-xs);min-width:30px;justify-content:center}
+.btn i{font-size:15px;flex-shrink:0}
+.btn-sm i{font-size:14px}
+
+/* ============================================================
+   APP SHELL
+   ============================================================ */
+.app-bar{
+  height:48px;background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 1rem;display:flex;align-items:center;gap:8px;
+  position:relative;z-index:100;flex-shrink:0;
+  box-shadow:var(--shadow);
+}
+.app-logo{
+  display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;
+  color:var(--text);letter-spacing:-.03em;margin-right:auto;
+  text-decoration:none;
+}
+.app-logo .logo-icon{
+  width:28px;height:28px;background:var(--accent);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  font-size:15px;flex-shrink:0;
+  box-shadow:0 2px 8px var(--accent-bg);
+}
+.layout{display:flex;flex:1;min-height:0;height:calc(100vh - 48px);overflow:hidden}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar{
+  width:var(--sidebar-w);min-width:180px;max-width:380px;
+  background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+  flex-shrink:0;position:relative;
+  transition:width var(--transition);
+}
+.sidebar-resize{
+  position:absolute;right:-3px;top:0;bottom:0;width:6px;
+  cursor:col-resize;z-index:10;
+  display:flex;align-items:center;justify-content:center;
+}
+.sidebar-resize::after{
+  content:'';width:2px;height:40px;border-radius:1px;
+  background:var(--border2);opacity:0;transition:opacity var(--transition);
+}
+.sidebar-resize:hover::after{opacity:1}
+.sidebar-top{
+  padding:10px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:6px;
+  flex-shrink:0;
+}
+.sidebar-section{flex:1;overflow-y:auto;padding:6px}
+.sidebar-label{
+  font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;
+  letter-spacing:.08em;padding:6px 8px 4px;
+}
+.sidebar-item{
+  display:flex;align-items:center;gap:8px;padding:7px 10px;
+  border-radius:var(--radius-xs);cursor:pointer;font-size:13px;
+  color:var(--text2);transition:background var(--transition),color var(--transition);
+  border:1px solid transparent;user-select:none;
+}
+.sidebar-item:hover{background:var(--surface2);color:var(--text)}
+.sidebar-item.active{background:var(--accent-bg);color:var(--accent-text);border-color:transparent}
+.sidebar-item i{font-size:16px;flex-shrink:0;opacity:.8}
+.sidebar-item .item-count{
+  margin-left:auto;font-size:11px;background:var(--surface3);
+  color:var(--text3);padding:1px 6px;border-radius:99px;font-weight:500;
+}
+.sidebar-item.active .item-count{background:var(--accent-bg);color:var(--accent-text)}
+/* folder tree */
+.folder-item{position:relative}
+.folder-toggle{
+  background:none;border:none;cursor:pointer;color:var(--text3);
+  padding:2px;border-radius:3px;display:flex;align-items:center;
+  transition:transform var(--transition),color var(--transition);flex-shrink:0;
+}
+.folder-toggle:hover{color:var(--text);background:var(--surface3)}
+.folder-toggle.open{transform:rotate(90deg)}
+.folder-children{padding-left:16px;overflow:hidden}
+.folder-children.collapsed{display:none}
+/* tag pills */
+.tags-area{display:flex;flex-wrap:wrap;gap:4px;padding:4px 6px}
+.tag-pill{
+  font-size:11px;padding:3px 9px;border-radius:99px;
+  cursor:pointer;border:1px solid transparent;
+  transition:background var(--transition),border-color var(--transition);
+  font-weight:500;color:var(--text2);background:var(--surface3);
+}
+.tag-pill:hover,.tag-pill.active{background:var(--accent-bg);color:var(--accent-text);border-color:var(--accent-bg)}
+
+/* ============================================================
+   SEARCH BOX
+   ============================================================ */
+.search-wrap{position:relative}
+.search-wrap i{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none}
+.search-input{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius-xs);padding:7px 10px 7px 32px;
+  color:var(--text);font-size:13px;outline:none;font-family:var(--font);
+  transition:border-color var(--transition),box-shadow var(--transition);
+}
+.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+.search-input::placeholder{color:var(--text3)}
+
+/* ============================================================
+   NOTES LIST
+   ============================================================ */
+.notes-panel{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  background:var(--surface);border-right:1px solid var(--border);
+  width:240px;min-width:200px;max-width:320px;flex-shrink:0;
+}
+.notes-panel-header{
+  padding:10px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:6px;flex-shrink:0;
+}
+.notes-panel-title{font-size:13px;font-weight:600;color:var(--text);flex:1}
+.notes-scroll{flex:1;overflow-y:auto;padding:6px}
+.note-card{
+  padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;
+  margin-bottom:3px;border:1px solid transparent;
+  transition:background var(--transition),border-color var(--transition),transform var(--transition);
+  animation:fadeSlide .2s ease;
+  position:relative;
+}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.note-card:hover{background:var(--surface2)}
+.note-card.active{background:var(--accent-bg);border-color:rgba(107,92,231,.2)}
+.note-card-header{display:flex;align-items:flex-start;gap:6px}
+.note-card-title{font-size:13px;font-weight:500;color:var(--text);flex:1;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note-card-star{color:var(--star);font-size:13px;flex-shrink:0}
+.note-card-preview{font-size:12px;color:var(--text3);margin-top:3px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.note-card-meta{margin-top:6px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.note-type-badge{font-size:10px;padding:2px 6px;border-radius:99px;font-weight:600;letter-spacing:.02em}
+.badge-nota{background:var(--accent-bg);color:var(--accent-text)}
+.badge-tabla{background:var(--teal-bg);color:var(--teal)}
+.note-date{font-size:11px;color:var(--text3)}
+.note-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
+.note-tag{font-size:10px;padding:1px 6px;border-radius:99px;background:var(--surface3);color:var(--text3)}
+.empty-list{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;gap:10px;color:var(--text3);padding:2rem;text-align:center;
+}
+.empty-list i{font-size:40px;opacity:.4}
+.empty-list p{font-size:13px}
+
+/* ============================================================
+   MAIN EDITOR
+   ============================================================ */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);min-width:0}
+.editor-topbar{
+  padding:8px 1.25rem;border-bottom:1px solid var(--border);background:var(--surface);
+  display:flex;align-items:center;gap:8px;flex-shrink:0;
+}
+.mode-tabs{display:flex;gap:2px;background:var(--surface2);border-radius:var(--radius-xs);padding:2px}
+.mode-tab{
+  padding:5px 12px;font-size:12px;color:var(--text2);cursor:pointer;border:none;
+  background:none;font-family:var(--font);border-radius:4px;
+  display:flex;align-items:center;gap:5px;
+  transition:background var(--transition),color var(--transition);font-weight:450;
+}
+.mode-tab.active{background:var(--surface);color:var(--accent-text);font-weight:500;box-shadow:var(--shadow)}
+.editor-actions{display:flex;align-items:center;gap:4px;margin-left:auto}
+
+/* ============================================================
+   TEXT EDITOR
+   ============================================================ */
+.editor-scroll{flex:1;overflow-y:auto;padding:2rem}
+.editor-card{
+  max-width:760px;margin:0 auto;background:var(--surface);
+  border-radius:var(--radius);border:1px solid var(--border);
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.note-title-input{
+  width:100%;background:none;border:none;outline:none;
+  font-size:24px;font-weight:600;color:var(--text);letter-spacing:-.03em;
+  padding:1.5rem 1.75rem 1rem;font-family:var(--font);line-height:1.2;
+  border-bottom:1px solid var(--border);
+}
 .note-title-input::placeholder{color:var(--text3)}
-.toolbar{padding:8px 1.5rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:4px;flex-wrap:wrap;background:var(--surface2)}
-.toolbar-btn{background:none;border:none;cursor:pointer;padding:5px 7px;border-radius:var(--radius-sm);color:var(--text2);font-size:14px;display:inline-flex;align-items:center;transition:background .15s,color .15s}
-.toolbar-btn:hover{background:var(--border);color:var(--text)}
-.toolbar-btn.active{background:var(--accent-bg);color:var(--accent-text)}
-.toolbar-sep{width:0.5px;height:20px;background:var(--border2);margin:0 4px}
-.content-editor{padding:1.25rem 1.5rem 2rem;min-height:300px;outline:none;line-height:1.75;color:var(--text);font-size:15px}
-.content-editor:empty::before{content:attr(data-placeholder);color:var(--text3)}
-.content-editor h1{font-size:20px;font-weight:500;margin:1rem 0 0.5rem}
-.content-editor h2{font-size:17px;font-weight:500;margin:0.8rem 0 0.4rem}
-.content-editor ul,.content-editor ol{padding-left:1.5rem;margin:0.5rem 0}
-.content-editor blockquote{border-left:3px solid var(--accent);padding-left:1rem;color:var(--text2);margin:0.5rem 0}
-.content-editor table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:14px}
-.content-editor th{background:var(--surface2);font-weight:500;text-align:left}
-.content-editor th,.content-editor td{border:0.5px solid var(--border);padding:8px 12px}
-.content-editor tr:nth-child(even) td{background:var(--surface2)}
-.mode-tabs{display:flex;gap:4px;padding:0 1.5rem;border-bottom:0.5px solid var(--border)}
-.mode-tab{padding:9px 16px;font-size:13px;color:var(--text2);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-0.5px;transition:color .15s}
-.mode-tab.active{color:var(--accent-text);border-bottom-color:var(--accent);font-weight:500}
-.table-editor{padding:1.25rem 1.5rem 2rem;display:none}
-.table-editor.visible{display:block}
-.table-controls{display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
-.input-sm{background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;color:var(--text);font-size:13px;outline:none;width:70px}
-.input-sm:focus{border-color:var(--accent)}
-.select-sm{background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;color:var(--text);font-size:13px;outline:none;cursor:pointer}
+.meta-bar{
+  padding:8px 1.75rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  border-bottom:1px solid var(--border);background:var(--surface2);
+}
+.meta-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3)}
+.meta-item i{font-size:14px}
+.tag-input-wrap{display:flex;align-items:center;gap:4px;flex-wrap:wrap;flex:1}
+.note-tag-editable{
+  font-size:11px;padding:2px 8px;border-radius:99px;background:var(--accent-bg);
+  color:var(--accent-text);display:flex;align-items:center;gap:4px;
+  cursor:pointer;transition:background var(--transition);
+}
+.note-tag-editable:hover{background:var(--surface3)}
+.note-tag-editable .remove-tag{opacity:.6;font-size:12px;line-height:1}
+.note-tag-editable .remove-tag:hover{opacity:1}
+.add-tag-btn{
+  font-size:11px;padding:2px 7px;border-radius:99px;color:var(--text3);
+  border:1px dashed var(--border2);background:none;cursor:pointer;font-family:var(--font);
+  transition:border-color var(--transition),color var(--transition);
+}
+.add-tag-btn:hover{border-color:var(--accent);color:var(--accent-text)}
+.tag-input-field{
+  background:none;border:none;outline:none;font-size:11px;
+  color:var(--text);font-family:var(--font);width:80px;
+}
+/* Rich text toolbar */
+.rich-toolbar{
+  padding:6px 1.75rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:2px;flex-wrap:wrap;
+  background:var(--surface);
+}
+.tb-btn{
+  background:none;border:none;cursor:pointer;padding:5px 6px;border-radius:5px;
+  color:var(--text2);font-size:14px;display:inline-flex;align-items:center;
+  transition:background var(--transition),color var(--transition);
+  font-family:var(--font);
+}
+.tb-btn:hover{background:var(--surface3);color:var(--text)}
+.tb-btn.active{background:var(--accent-bg);color:var(--accent-text)}
+.tb-sep{width:1px;height:18px;background:var(--border2);margin:0 3px;flex-shrink:0}
+.content-editor{
+  padding:1.25rem 1.75rem 2.5rem;min-height:300px;outline:none;
+  line-height:1.8;color:var(--text);font-size:15px;
+  font-family:var(--font);caret-color:var(--accent);
+}
+.content-editor:empty::before{content:attr(data-placeholder);color:var(--text3);pointer-events:none}
+.content-editor h1{font-size:22px;font-weight:600;margin:1.2rem 0 .5rem;letter-spacing:-.02em}
+.content-editor h2{font-size:18px;font-weight:600;margin:1rem 0 .4rem;letter-spacing:-.02em}
+.content-editor p{margin:.3rem 0}
+.content-editor ul,.content-editor ol{padding-left:1.5rem;margin:.5rem 0}
+.content-editor li{margin:.2rem 0}
+.content-editor blockquote{border-left:3px solid var(--accent);padding:.5rem 1rem;color:var(--text2);margin:.75rem 0;background:var(--accent-bg);border-radius:0 var(--radius-xs) var(--radius-xs) 0}
+.content-editor code{background:var(--surface3);color:var(--accent-text);padding:1px 5px;border-radius:4px;font-family:var(--font-mono);font-size:13px}
+.content-editor pre{background:var(--surface3);padding:1rem;border-radius:var(--radius-sm);overflow-x:auto;margin:.75rem 0}
+.content-editor pre code{background:none;padding:0}
+.content-editor img{max-width:100%;border-radius:var(--radius-sm);margin:.5rem 0;display:block;border:1px solid var(--border)}
+.content-editor a{color:var(--accent);text-decoration:none}
+.content-editor a:hover{text-decoration:underline}
+/* Checklist */
+.content-editor .checklist-item{display:flex;align-items:flex-start;gap:8px;margin:.2rem 0;list-style:none}
+.content-editor .checklist-item input[type=checkbox]{
+  margin-top:3px;accent-color:var(--accent);width:15px;height:15px;cursor:pointer;flex-shrink:0;
+}
+.content-editor .checklist-item.checked span{text-decoration:line-through;color:var(--text3)}
+/* Markdown preview */
+.md-preview{padding:1.25rem 1.75rem 2.5rem;min-height:300px;line-height:1.8;font-size:15px}
+.md-preview h1{font-size:22px;font-weight:600;margin:1.2rem 0 .5rem;border-bottom:1px solid var(--border);padding-bottom:.4rem}
+.md-preview h2{font-size:18px;font-weight:600;margin:1rem 0 .4rem}
+.md-preview h3{font-size:16px;font-weight:600;margin:.8rem 0 .3rem}
+.md-preview code{background:var(--surface3);color:var(--accent-text);padding:1px 5px;border-radius:4px;font-family:var(--font-mono);font-size:13px}
+.md-preview pre{background:var(--surface3);padding:1rem;border-radius:var(--radius-sm);overflow-x:auto;margin:.75rem 0}
+.md-preview pre code{background:none;padding:0}
+.md-preview blockquote{border-left:3px solid var(--accent);padding:.5rem 1rem;color:var(--text2);margin:.75rem 0;background:var(--accent-bg);border-radius:0 var(--radius-xs) var(--radius-xs) 0}
+.md-preview ul,.md-preview ol{padding-left:1.5rem;margin:.5rem 0}
+.md-preview a{color:var(--accent)}
+.md-preview img{max-width:100%;border-radius:var(--radius-sm)}
+.md-preview table{width:100%;border-collapse:collapse;margin:.75rem 0;font-size:14px}
+.md-preview th,.md-preview td{border:1px solid var(--border2);padding:8px 12px}
+.md-preview th{background:var(--surface2);font-weight:600}
+/* Drop zone */
+.drop-overlay{
+  display:none;position:absolute;inset:0;background:var(--accent-bg);
+  border:2px dashed var(--accent);border-radius:var(--radius);
+  z-index:50;align-items:center;justify-content:center;
+  flex-direction:column;gap:8px;color:var(--accent-text);font-weight:500;
+}
+.drop-overlay.active{display:flex;animation:pulse .8s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+
+/* ============================================================
+   TABLE EDITOR
+   ============================================================ */
+.table-panel{flex:1;overflow-y:auto;padding:2rem;display:none}
+.table-panel.active{display:block}
+.table-wrap{
+  max-width:100%;margin:0 auto;background:var(--surface);
+  border-radius:var(--radius);border:1px solid var(--border);
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.table-toolbar{
+  padding:10px 1.25rem;border-bottom:1px solid var(--border);background:var(--surface2);
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
 .table-scroll{overflow-x:auto}
 .editable-table{border-collapse:collapse;min-width:100%;font-size:14px}
-.editable-table th,.editable-table td{border:0.5px solid var(--border);padding:0;min-width:120px}
-.editable-table th{background:var(--surface2)}
-.cell-input{width:100%;background:none;border:none;outline:none;padding:8px 10px;color:var(--text);font-size:14px;font-family:inherit}
-.editable-table th .cell-input{font-weight:500}
-.editable-table tr:nth-child(even) td{background:var(--surface2)}
-.editable-table .del-row,.editable-table .del-col{background:none;border:none;cursor:pointer;color:var(--text3);padding:2px 5px;border-radius:3px;font-size:12px;display:inline-flex;align-items:center}
-.editable-table .del-row:hover,.editable-table .del-col:hover{color:var(--red);background:var(--red-bg)}
-.col-header{display:flex;align-items:center;gap:4px}
-.row-actions{vertical-align:middle;padding:0 6px!important;width:28px;min-width:28px;background:var(--bg)!important;border:none!important}
-.status-bar{padding:6px 1.5rem;display:flex;align-items:center;gap:12px;background:var(--surface);border-top:0.5px solid var(--border);font-size:12px;color:var(--text3)}
-.saved-indicator{display:flex;align-items:center;gap:5px}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
-.dot.saving{background:var(--amber)}
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:1rem;color:var(--text3)}
-.empty-state i{font-size:48px;opacity:.4}
-.empty-state p{font-size:15px}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
-.modal-bg.open{display:flex}
-.modal{background:var(--surface);border-radius:var(--radius);border:0.5px solid var(--border);padding:1.5rem;width:360px;max-width:95vw}
-.modal h3{font-size:16px;font-weight:500;margin-bottom:1rem}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem}
-.template-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
-.template-card{background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;cursor:pointer;transition:border-color .15s}
-.template-card:hover{border-color:var(--accent)}
-.template-card .tc-icon{font-size:20px;margin-bottom:4px;color:var(--accent)}
-.template-card .tc-name{font-size:13px;font-weight:500}
-.template-card .tc-desc{font-size:11px;color:var(--text3);margin-top:2px}
-.label{font-size:12px;color:var(--text2);margin-bottom:4px;display:block}
-input[type=text].full{width:100%;background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;color:var(--text);font-size:14px;outline:none}
-input[type=text].full:focus{border-color:var(--accent)}
+.editable-table th,.editable-table td{border:1px solid var(--border);padding:0;min-width:130px;position:relative}
+.editable-table th{background:var(--surface2);position:sticky;top:0;z-index:1}
+.editable-table tr:hover td{background:var(--surface2)}
+.editable-table tr:nth-child(even) td{background:rgba(0,0,0,.015)}
+[data-theme="dark"] .editable-table tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.cell-input{
+  width:100%;background:none;border:none;outline:none;padding:9px 12px;
+  color:var(--text);font-size:14px;font-family:var(--font);
+}
+.cell-input:focus{box-shadow:inset 0 0 0 2px var(--accent)}
+.editable-table th .cell-input{font-weight:600}
+.col-ctrl{display:flex;align-items:center;gap:2px;position:relative}
+.del-btn{
+  background:none;border:none;cursor:pointer;color:var(--text3);
+  padding:3px 5px;border-radius:4px;font-size:12px;
+  display:inline-flex;align-items:center;
+  transition:color var(--transition),background var(--transition);
+  opacity:0;
+}
+th:hover .del-btn,.tr-wrap:hover .del-btn{opacity:1}
+.del-btn:hover{color:var(--red);background:var(--red-bg)}
+.row-meta{width:32px;min-width:32px;background:var(--bg)!important;border-color:var(--border)!important;text-align:center;vertical-align:middle;border-left:none!important}
+
+/* ============================================================
+   STATUS BAR
+   ============================================================ */
+.status-bar{
+  padding:5px 1.25rem;display:flex;align-items:center;gap:12px;
+  background:var(--surface);border-top:1px solid var(--border);
+  font-size:11px;color:var(--text3);flex-shrink:0;
+}
+.save-dot{width:7px;height:7px;border-radius:50%;background:var(--green);transition:background var(--transition)}
+.save-dot.saving{background:var(--amber);animation:blink 1s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.status-group{display:flex;align-items:center;gap:5px}
+.kbd{
+  font-size:10px;padding:1px 5px;border-radius:4px;
+  background:var(--surface3);border:1px solid var(--border2);
+  color:var(--text2);font-family:var(--font-mono);
+}
+
+/* ============================================================
+   EMPTY STATE (main)
+   ============================================================ */
+.main-empty{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:1rem;color:var(--text3);padding:3rem;text-align:center;
+}
+.main-empty .big-icon{font-size:56px;opacity:.25;display:block;margin-bottom:.5rem}
+.main-empty p{font-size:15px;max-width:280px;line-height:1.6}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+.modal-bg{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);
+  z-index:500;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.modal-bg.open{display:flex;animation:fadeIn .15s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--surface);border-radius:var(--radius);
+  border:1px solid var(--border);box-shadow:var(--shadow-lg);
+  padding:1.5rem;width:400px;max-width:95vw;
+  animation:slideUp .2s ease;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.modal-lg{width:560px}
+.modal h3{font-size:16px;font-weight:600;margin-bottom:1.25rem;letter-spacing:-.02em}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:1.5rem}
+.form-group{margin-bottom:1rem}
+.form-label{font-size:12px;color:var(--text2);margin-bottom:5px;display:block;font-weight:500}
+.form-input{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius-xs);padding:9px 12px;color:var(--text);
+  font-size:14px;font-family:var(--font);outline:none;
+  transition:border-color var(--transition),box-shadow var(--transition);
+}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+.form-select{cursor:pointer}
+/* Templates grid */
+.tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+.tpl-card{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:12px 10px;cursor:pointer;
+  transition:border-color var(--transition),box-shadow var(--transition);
+  text-align:center;
+}
+.tpl-card:hover{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-bg)}
+.tpl-card.selected{border-color:var(--accent);background:var(--accent-bg)}
+.tpl-icon{font-size:22px;color:var(--accent);margin-bottom:5px}
+.tpl-name{font-size:12px;font-weight:600;color:var(--text)}
+.tpl-desc{font-size:10px;color:var(--text3);margin-top:2px;line-height:1.3}
+/* Theme selector */
+.theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
+.theme-card{
+  border:2px solid var(--border);border-radius:var(--radius-sm);
+  padding:10px;cursor:pointer;text-align:center;
+  transition:border-color var(--transition);
+}
+.theme-card:hover,.theme-card.active{border-color:var(--accent)}
+.theme-swatch{
+  width:100%;height:36px;border-radius:6px;margin-bottom:6px;
+  display:flex;overflow:hidden;
+}
+.theme-swatch span{flex:1}
+.theme-name{font-size:11px;font-weight:600;color:var(--text2)}
+/* Shortcuts table */
+.shortcuts-table{width:100%;border-collapse:collapse;font-size:13px}
+.shortcuts-table td{padding:6px 0;border-bottom:1px solid var(--border)}
+.shortcuts-table td:first-child{color:var(--text2)}
+.shortcuts-table td:last-child{text-align:right}
+/* Search advanced */
+.search-filters{display:flex;gap:6px;flex-wrap:wrap;padding:8px 0}
+.filter-chip{
+  font-size:12px;padding:4px 10px;border-radius:99px;
+  border:1px solid var(--border2);background:var(--surface2);
+  color:var(--text2);cursor:pointer;transition:all var(--transition);
+}
+.filter-chip.active{background:var(--accent-bg);color:var(--accent-text);border-color:var(--accent-bg)}
+/* History list */
+.history-list{max-height:280px;overflow-y:auto}
+.history-item{
+  padding:10px 12px;border-radius:var(--radius-xs);cursor:pointer;
+  border:1px solid var(--border);margin-bottom:6px;
+  transition:border-color var(--transition);
+}
+.history-item:hover{border-color:var(--accent)}
+.history-item-title{font-size:13px;font-weight:500}
+.history-item-meta{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* ============================================================
+   CONTEXT MENU
+   ============================================================ */
+.ctx-menu{
+  position:fixed;z-index:600;background:var(--surface);
+  border:1px solid var(--border2);border-radius:var(--radius-sm);
+  box-shadow:var(--shadow-lg);padding:4px;min-width:160px;
+  animation:fadeIn .12s ease;
+}
+.ctx-item{
+  display:flex;align-items:center;gap:8px;padding:7px 10px;
+  border-radius:var(--radius-xs);font-size:13px;color:var(--text2);
+  cursor:pointer;transition:background var(--transition),color var(--transition);
+}
+.ctx-item:hover{background:var(--surface2);color:var(--text)}
+.ctx-item.danger{color:var(--red)}
+.ctx-item.danger:hover{background:var(--red-bg)}
+.ctx-item i{font-size:15px}
+.ctx-sep{height:1px;background:var(--border);margin:3px 0}
+
+/* ============================================================
+   TOAST NOTIFICATIONS
+   ============================================================ */
+.toast-wrap{
+  position:fixed;bottom:24px;right:24px;z-index:800;
+  display:flex;flex-direction:column;gap:6px;pointer-events:none;
+}
+.toast{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);
+  padding:10px 14px;font-size:13px;color:var(--text);
+  display:flex;align-items:center;gap:8px;
+  animation:slideIn .25s ease;pointer-events:auto;max-width:280px;
+}
+.toast.toast-success{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.toast.toast-error{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(20px)}}
+.toast.out{animation:slideOut .2s ease forwards}
+
+/* ============================================================
+   SORT BAR
+   ============================================================ */
+.sort-bar{
+  padding:6px 10px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:4px;flex-shrink:0;background:var(--surface2);
+}
+.sort-btn{
+  font-size:11px;padding:3px 8px;border-radius:99px;
+  border:none;background:none;color:var(--text3);cursor:pointer;
+  font-family:var(--font);transition:background var(--transition),color var(--transition);
+}
+.sort-btn.active{background:var(--surface);color:var(--accent-text);font-weight:500;box-shadow:var(--shadow)}
+
+/* ============================================================
+   RESPONSIVE / MISC
+   ============================================================ */
+.hidden{display:none!important}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+@media(max-width:900px){
+  .notes-panel{width:200px;min-width:180px}
+  .sidebar{width:200px;min-width:180px}
+}
+@media(max-width:650px){
+  .sidebar{display:none}
+  .notes-panel{width:180px}
+}
+/* Fade in on note open */
+.note-appear{animation:noteAppear .2s ease}
+@keyframes noteAppear{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* Folder depth indent */
+.depth-1{padding-left:24px}
+.depth-2{padding-left:40px}
 </style>
 </head>
 <body>
 
-<!-- Barra superior -->
-<div class="app-bar">
-  <div class="app-title">
-    <i class="ti ti-notebook" aria-hidden="true"></i>
-    Mis notas
+<!-- ===================== APP BAR ===================== -->
+<header class="app-bar">
+  <a class="app-logo" href="#" aria-label="Notas Pro">
+    <div class="logo-icon"><i class="ti ti-notebook" aria-hidden="true"></i></div>
+    Notas Pro
+  </a>
+  <div style="display:flex;align-items:center;gap:6px">
+    <button class="btn btn-ghost btn-sm" id="btn-theme" title="Cambiar tema (T)"><i class="ti ti-palette"></i></button>
+    <button class="btn btn-ghost btn-sm" id="btn-shortcuts" title="Atajos de teclado (?)"><i class="ti ti-keyboard"></i></button>
+    <button class="btn btn-ghost btn-sm" id="btn-import" title="Importar notas"><i class="ti ti-upload"></i></button>
+    <button class="btn btn-ghost btn-sm" id="btn-export-all" title="Exportar todas las notas"><i class="ti ti-download"></i></button>
   </div>
-  <button class="btn btn-accent" id="btn-new-note">
-    <i class="ti ti-plus"></i>Nueva nota
-  </button>
-  <button class="btn" id="btn-new-table">
-    <i class="ti ti-table-plus"></i>Nueva tabla
-  </button>
-</div>
+</header>
 
-<!-- Layout principal -->
 <div class="layout">
 
-  <!-- Sidebar / lista de notas -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="search-box">
+  <!-- ============== SIDEBAR ============== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="search-wrap">
         <i class="ti ti-search" aria-hidden="true"></i>
-        <input type="text" id="search-input" placeholder="Buscar notas...">
+        <input type="text" class="search-input" id="search-input" placeholder="Buscar... (Ctrl+F)" aria-label="Buscar notas">
       </div>
-    </div>
-    <div class="notes-list" id="notes-list">
-      <div class="empty-state" style="margin-top:2rem">
-        <i class="ti ti-notes" aria-hidden="true"></i>
-        <p>Sin notas aún</p>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Área principal del editor -->
-  <main class="main" id="main-area">
-
-    <!-- Estado vacío -->
-    <div class="empty-state" id="empty-main">
-      <i class="ti ti-notebook" aria-hidden="true"></i>
-      <p>Selecciona o crea una nota</p>
-      <button class="btn btn-accent" id="btn-start">
-        <i class="ti ti-plus"></i>Crear primera nota
-      </button>
-    </div>
-
-    <!-- Panel del editor (oculto hasta abrir nota) -->
-    <div id="editor-panel" style="display:none;flex-direction:column;height:100%">
-
-      <!-- Tabs de modo + botón eliminar -->
-      <div style="padding:10px 1.5rem;border-bottom:0.5px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:8px">
-        <div class="mode-tabs" style="padding:0;border:none;flex:1">
-          <button class="mode-tab active" data-mode="text">
-            <i class="ti ti-pencil" style="margin-right:4px"></i>Nota
-          </button>
-          <button class="mode-tab" data-mode="table">
-            <i class="ti ti-table" style="margin-right:4px"></i>Tabla
-          </button>
-        </div>
-        <button class="btn btn-sm" id="btn-delete-note" title="Eliminar nota">
-          <i class="ti ti-trash"></i>
+      <div style="display:flex;gap:4px">
+        <button class="btn btn-accent" id="btn-new-note" style="flex:1;justify-content:center" title="Nueva nota (Ctrl+N)">
+          <i class="ti ti-plus"></i><span>Nota</span>
+        </button>
+        <button class="btn btn-ghost" id="btn-new-table" title="Nueva tabla (Ctrl+Shift+N)">
+          <i class="ti ti-table-plus"></i>
         </button>
       </div>
+    </div>
 
-      <!-- Panel: editor de texto -->
-      <div class="editor-area" id="text-panel">
-        <div class="editor-wrap">
-          <input type="text" class="note-title-input" id="note-title" placeholder="Título de la nota...">
-          <div class="toolbar" id="toolbar">
-            <button class="toolbar-btn" data-cmd="bold" title="Negrita"><i class="ti ti-bold"></i></button>
-            <button class="toolbar-btn" data-cmd="italic" title="Cursiva"><i class="ti ti-italic"></i></button>
-            <button class="toolbar-btn" data-cmd="underline" title="Subrayado"><i class="ti ti-underline"></i></button>
-            <span class="toolbar-sep"></span>
-            <button class="toolbar-btn" data-cmd="formatBlock" data-val="h1" title="Título 1"><i class="ti ti-h-1"></i></button>
-            <button class="toolbar-btn" data-cmd="formatBlock" data-val="h2" title="Título 2"><i class="ti ti-h-2"></i></button>
-            <span class="toolbar-sep"></span>
-            <button class="toolbar-btn" data-cmd="insertUnorderedList" title="Lista con viñetas"><i class="ti ti-list"></i></button>
-            <button class="toolbar-btn" data-cmd="insertOrderedList" title="Lista numerada"><i class="ti ti-list-numbers"></i></button>
-            <button class="toolbar-btn" data-cmd="formatBlock" data-val="blockquote" title="Cita"><i class="ti ti-blockquote"></i></button>
-            <span class="toolbar-sep"></span>
-            <button class="toolbar-btn" data-cmd="justifyLeft" title="Alinear izquierda"><i class="ti ti-align-left"></i></button>
-            <button class="toolbar-btn" data-cmd="justifyCenter" title="Centrar"><i class="ti ti-align-center"></i></button>
-            <button class="toolbar-btn" data-cmd="justifyRight" title="Alinear derecha"><i class="ti ti-align-right"></i></button>
-            <span class="toolbar-sep"></span>
-            <button class="toolbar-btn" data-cmd="removeFormat" title="Limpiar formato"><i class="ti ti-clear-formatting"></i></button>
-          </div>
-          <div
-            class="content-editor"
-            id="content-editor"
-            contenteditable="true"
-            data-placeholder="Escribe tu nota aquí...">
-          </div>
+    <div class="sidebar-section">
+      <!-- Nav items -->
+      <div class="sidebar-label">Vistas</div>
+      <div class="sidebar-item active" data-view="all" role="button" tabindex="0"><i class="ti ti-layout-dashboard"></i>Todas las notas<span class="item-count" id="count-all">0</span></div>
+      <div class="sidebar-item" data-view="favorites" role="button" tabindex="0"><i class="ti ti-star"></i>Favoritas<span class="item-count" id="count-fav">0</span></div>
+      <div class="sidebar-item" data-view="trash" role="button" tabindex="0"><i class="ti ti-trash"></i>Papelera<span class="item-count" id="count-trash">0</span></div>
+
+      <!-- Folders -->
+      <div class="sidebar-label" style="margin-top:8px;display:flex;align-items:center;gap:4px">
+        Carpetas
+        <button class="btn btn-ghost btn-xs btn-icon" id="btn-add-folder" title="Nueva carpeta" style="margin-left:auto"><i class="ti ti-plus"></i></button>
+      </div>
+      <div id="folders-tree"></div>
+
+      <!-- Tags -->
+      <div class="sidebar-label" style="margin-top:8px">Etiquetas</div>
+      <div class="tags-area" id="tags-area"></div>
+    </div>
+
+    <!-- Resize handle -->
+    <div class="sidebar-resize" id="sidebar-resize" title="Redimensionar sidebar"></div>
+  </aside>
+
+  <!-- ============== NOTES LIST PANEL ============== -->
+  <section class="notes-panel" aria-label="Lista de notas">
+    <div class="notes-panel-header">
+      <span class="notes-panel-title" id="panel-title">Todas las notas</span>
+      <button class="btn btn-ghost btn-xs btn-icon" id="btn-sort-menu" title="Ordenar"><i class="ti ti-arrows-sort"></i></button>
+    </div>
+    <div class="sort-bar">
+      <button class="sort-btn active" data-sort="updated">Reciente</button>
+      <button class="sort-btn" data-sort="created">Creación</button>
+      <button class="sort-btn" data-sort="alpha">A-Z</button>
+    </div>
+    <div class="notes-scroll" id="notes-list" role="list" aria-label="Notas"></div>
+  </section>
+
+  <!-- ============== MAIN EDITOR ============== -->
+  <main class="main" id="main">
+
+    <div class="main-empty" id="main-empty">
+      <i class="ti ti-notebook big-icon" aria-hidden="true"></i>
+      <p>Selecciona una nota o crea una nueva para empezar</p>
+      <button class="btn btn-accent" id="btn-start"><i class="ti ti-plus"></i>Nueva nota</button>
+    </div>
+
+    <div id="editor-panel" class="hidden" style="display:flex;flex-direction:column;height:100%">
+      <!-- Top bar -->
+      <div class="editor-topbar">
+        <div class="mode-tabs" id="mode-tabs">
+          <button class="mode-tab active" data-mode="rich" title="Editor enriquecido">
+            <i class="ti ti-pencil"></i>Rich
+          </button>
+          <button class="mode-tab" data-mode="markdown" title="Editor Markdown">
+            <i class="ti ti-markdown"></i>Markdown
+          </button>
+          <button class="mode-tab" data-mode="preview" title="Vista previa Markdown">
+            <i class="ti ti-eye"></i>Vista
+          </button>
+          <button class="mode-tab" data-mode="table" title="Editor de tabla">
+            <i class="ti ti-table"></i>Tabla
+          </button>
+        </div>
+        <div class="editor-actions">
+          <button class="btn btn-ghost btn-sm" id="btn-star" title="Favorita (Ctrl+Shift+F)"><i class="ti ti-star"></i></button>
+          <button class="btn btn-ghost btn-sm" id="btn-history" title="Historial de cambios"><i class="ti ti-history"></i></button>
+          <button class="btn btn-ghost btn-sm" id="btn-export-note" title="Exportar nota"><i class="ti ti-file-export"></i></button>
+          <button class="btn btn-ghost btn-sm danger-hover" id="btn-delete-note" title="Mover a papelera (Del)"><i class="ti ti-trash" style="color:var(--text3)"></i></button>
         </div>
       </div>
 
-      <!-- Panel: editor de tablas -->
-      <div id="table-panel" class="editor-area" style="display:none">
-        <div class="editor-wrap">
-          <input type="text" class="note-title-input" id="table-title" placeholder="Título de la tabla...">
-          <div style="padding:10px 1.5rem;border-bottom:0.5px solid var(--border);background:var(--surface2);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <span style="font-size:13px;color:var(--text2)">Filas:</span>
-            <input class="input-sm" type="number" id="add-rows" value="1" min="1" max="20" style="width:60px">
-            <button class="btn btn-sm" id="btn-add-rows">
-              <i class="ti ti-plus"></i>Agregar filas
-            </button>
-            <span class="toolbar-sep"></span>
-            <span style="font-size:13px;color:var(--text2)">Cols:</span>
-            <input class="input-sm" type="number" id="add-cols" value="1" min="1" max="20" style="width:60px">
-            <button class="btn btn-sm" id="btn-add-cols">
-              <i class="ti ti-plus"></i>Agregar cols
-            </button>
-          </div>
-          <div class="table-editor visible">
-            <div class="table-scroll">
-              <table class="editable-table" id="editable-table">
-                <thead id="table-head"></thead>
-                <tbody id="table-body"></tbody>
-              </table>
+      <!-- Rich text editor -->
+      <div id="rich-panel" class="editor-scroll" style="flex:1;display:flex;flex-direction:column;min-height:0">
+        <div class="editor-card note-appear">
+          <input type="text" class="note-title-input" id="note-title" placeholder="Título de la nota..." aria-label="Título">
+
+          <!-- Meta bar (tags, folder, date) -->
+          <div class="meta-bar">
+            <span class="meta-item"><i class="ti ti-folder" style="color:var(--text3)"></i>
+              <select class="form-input form-select" id="note-folder-select" style="padding:2px 6px;font-size:12px;border:none;background:transparent;color:var(--text3);cursor:pointer">
+                <option value="">Sin carpeta</option>
+              </select>
+            </span>
+            <span class="tb-sep"></span>
+            <div class="tag-input-wrap" id="tag-editor">
+              <span class="meta-item"><i class="ti ti-tag" style="color:var(--text3)"></i></span>
             </div>
           </div>
+
+          <!-- Toolbar -->
+          <div class="rich-toolbar" id="rich-toolbar" role="toolbar" aria-label="Herramientas de formato">
+            <button class="tb-btn" data-cmd="bold" title="Negrita (Ctrl+B)"><i class="ti ti-bold"></i></button>
+            <button class="tb-btn" data-cmd="italic" title="Cursiva (Ctrl+I)"><i class="ti ti-italic"></i></button>
+            <button class="tb-btn" data-cmd="underline" title="Subrayado (Ctrl+U)"><i class="ti ti-underline"></i></button>
+            <button class="tb-btn" data-cmd="strikeThrough" title="Tachado"><i class="ti ti-strikethrough"></i></button>
+            <span class="tb-sep"></span>
+            <button class="tb-btn" data-cmd="formatBlock" data-val="h1" title="Título 1"><i class="ti ti-h-1"></i></button>
+            <button class="tb-btn" data-cmd="formatBlock" data-val="h2" title="Título 2"><i class="ti ti-h-2"></i></button>
+            <span class="tb-sep"></span>
+            <button class="tb-btn" data-cmd="insertUnorderedList" title="Lista con viñetas"><i class="ti ti-list"></i></button>
+            <button class="tb-btn" data-cmd="insertOrderedList" title="Lista numerada"><i class="ti ti-list-numbers"></i></button>
+            <button class="tb-btn" id="btn-checklist" title="Checklist interactiva"><i class="ti ti-checkbox"></i></button>
+            <button class="tb-btn" data-cmd="formatBlock" data-val="blockquote" title="Cita"><i class="ti ti-blockquote"></i></button>
+            <span class="tb-sep"></span>
+            <button class="tb-btn" data-cmd="justifyLeft" title="Izquierda"><i class="ti ti-align-left"></i></button>
+            <button class="tb-btn" data-cmd="justifyCenter" title="Centro"><i class="ti ti-align-center"></i></button>
+            <button class="tb-btn" data-cmd="justifyRight" title="Derecha"><i class="ti ti-align-right"></i></button>
+            <span class="tb-sep"></span>
+            <button class="tb-btn" id="btn-insert-img" title="Insertar imagen"><i class="ti ti-photo"></i></button>
+            <button class="tb-btn" id="btn-insert-link" title="Insertar enlace"><i class="ti ti-link"></i></button>
+            <button class="tb-btn" data-cmd="removeFormat" title="Limpiar formato"><i class="ti ti-clear-formatting"></i></button>
+          </div>
+
+          <!-- Editable area -->
+          <div class="content-editor" id="content-editor"
+               contenteditable="true"
+               data-placeholder="Escribe tu nota aquí... o arrastra una imagen"
+               role="textbox"
+               aria-multiline="true"
+               aria-label="Contenido de la nota">
+          </div>
+          <!-- Drop overlay -->
+          <div class="drop-overlay" id="drop-overlay"><i class="ti ti-photo" style="font-size:36px"></i><span>Suelta la imagen aquí</span></div>
         </div>
       </div>
 
-      <!-- Barra de estado -->
+      <!-- Markdown editor -->
+      <div id="md-panel" class="hidden" style="flex:1;display:flex;gap:0;min-height:0;overflow:hidden">
+        <div style="flex:1;overflow-y:auto;padding:1.5rem;border-right:1px solid var(--border)">
+          <div class="editor-card" style="height:calc(100%-2rem)">
+            <input type="text" class="note-title-input" id="md-title" placeholder="Título..." aria-label="Título markdown">
+            <textarea id="md-editor"
+              style="width:100%;min-height:400px;resize:none;background:none;border:none;outline:none;padding:1.25rem 1.75rem;font-family:var(--font-mono);font-size:14px;line-height:1.8;color:var(--text);flex:1"
+              placeholder="Escribe en Markdown..."></textarea>
+          </div>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:1.5rem">
+          <div class="editor-card">
+            <div class="md-preview" id="md-preview"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview only -->
+      <div id="preview-panel" class="hidden editor-scroll" style="flex:1">
+        <div class="editor-card">
+          <div class="md-preview" id="preview-only" style="padding:1.5rem 1.75rem 2.5rem"></div>
+        </div>
+      </div>
+
+      <!-- Table editor -->
+      <div id="table-panel" class="hidden" style="flex:1;overflow-y:auto;padding:1.5rem">
+        <div class="table-wrap">
+          <input type="text" class="note-title-input" id="table-title" placeholder="Título de la tabla..." aria-label="Título de tabla">
+          <div class="table-toolbar">
+            <span style="font-size:12px;color:var(--text2)">Filas:</span>
+            <input type="number" id="add-rows" value="1" min="1" max="50" style="width:56px" class="form-input" style="padding:4px 8px">
+            <button class="btn btn-ghost btn-sm" id="btn-add-rows"><i class="ti ti-plus"></i>Agregar</button>
+            <span class="tb-sep"></span>
+            <span style="font-size:12px;color:var(--text2)">Cols:</span>
+            <input type="number" id="add-cols" value="1" min="1" max="30" style="width:56px" class="form-input">
+            <button class="btn btn-ghost btn-sm" id="btn-add-cols"><i class="ti ti-plus"></i>Agregar</button>
+            <span class="tb-sep"></span>
+            <button class="btn btn-ghost btn-sm" id="btn-export-csv" title="Exportar a CSV"><i class="ti ti-file-type-csv"></i>CSV</button>
+          </div>
+          <div class="table-scroll">
+            <table class="editable-table" id="editable-table">
+              <thead id="table-head"></thead>
+              <tbody id="table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status bar -->
       <div class="status-bar">
-        <div class="saved-indicator">
-          <div class="dot" id="save-dot"></div>
+        <div class="status-group">
+          <div class="save-dot" id="save-dot"></div>
           <span id="save-status">Guardado</span>
         </div>
         <span id="word-count">0 palabras</span>
+        <span id="char-count">0 caracteres</span>
+        <span id="read-time">0 min lectura</span>
         <span id="note-date" style="margin-left:auto"></span>
+        <span id="shortcut-hint" class="hidden" style="color:var(--text3);font-size:11px"></span>
       </div>
-
     </div><!-- /editor-panel -->
   </main>
 </div><!-- /layout -->
 
-<!-- Modal: nueva nota de texto -->
-<div class="modal-bg" id="modal-new">
-  <div class="modal">
-    <h3>Nueva nota</h3>
-    <label class="label" for="new-note-title">Título</label>
-    <input type="text" id="new-note-title" class="full" placeholder="Ej: Ideas del proyecto">
-    <div class="modal-actions">
-      <button class="btn" id="modal-cancel">Cancelar</button>
-      <button class="btn btn-accent" id="modal-create">
-        <i class="ti ti-check"></i>Crear
-      </button>
-    </div>
-  </div>
-</div>
+<!-- Hidden file input for images -->
+<input type="file" id="img-file-input" accept="image/*" class="hidden">
+<input type="file" id="import-file-input" accept=".json" class="hidden">
 
-<!-- Modal: nueva tabla con plantillas -->
-<div class="modal-bg" id="modal-table">
-  <div class="modal">
-    <h3>Nueva tabla</h3>
-    <label class="label">Plantilla</label>
-    <div class="template-grid">
-      <div class="template-card" data-tpl="horario">
-        <div class="tc-icon"><i class="ti ti-clock"></i></div>
-        <div class="tc-name">Horario</div>
-        <div class="tc-desc">Horas, días y actividades</div>
-      </div>
-      <div class="template-card" data-tpl="rutina">
-        <div class="tc-icon"><i class="ti ti-repeat"></i></div>
-        <div class="tc-name">Rutina</div>
-        <div class="tc-desc">Actividades y hábitos diarios</div>
-      </div>
-      <div class="template-card" data-tpl="comidas">
-        <div class="tc-icon"><i class="ti ti-salad"></i></div>
-        <div class="tc-name">Plan de comidas</div>
-        <div class="tc-desc">Desayuno, comida y cena</div>
-      </div>
-      <div class="template-card" data-tpl="tareas">
-        <div class="tc-icon"><i class="ti ti-checklist"></i></div>
-        <div class="tc-name">Tareas</div>
-        <div class="tc-desc">Lista con prioridad y estado</div>
-      </div>
-      <div class="template-card" data-tpl="gastos">
-        <div class="tc-icon"><i class="ti ti-coin"></i></div>
-        <div class="tc-name">Gastos</div>
-        <div class="tc-desc">Registro de ingresos y egresos</div>
-      </div>
-      <div class="template-card" data-tpl="libre">
-        <div class="tc-icon"><i class="ti ti-table"></i></div>
-        <div class="tc-name">Libre</div>
-        <div class="tc-desc">Tabla vacía personalizada</div>
-      </div>
-    </div>
-    <label class="label" for="table-note-title-input">Título</label>
-    <input type="text" id="table-note-title-input" class="full" placeholder="Ej: Mi horario semanal">
-    <div class="modal-actions">
-      <button class="btn" id="modal-table-cancel">Cancelar</button>
-      <button class="btn btn-accent" id="modal-table-create">
-        <i class="ti ti-check"></i>Crear tabla
-      </button>
+<!-- ============== MODALS ============== -->
+
+<!-- Nueva nota -->
+<div class="modal-bg" id="modal-new"><div class="modal">
+  <h3><i class="ti ti-plus" style="color:var(--accent);margin-right:6px"></i>Nueva nota</h3>
+  <div class="form-group"><label class="form-label">Título</label><input type="text" id="new-note-title" class="form-input" placeholder="Ej: Ideas del proyecto"></div>
+  <div class="form-group"><label class="form-label">Carpeta</label><select id="new-note-folder" class="form-input form-select"><option value="">Sin carpeta</option></select></div>
+  <div class="modal-actions"><button class="btn btn-ghost" id="modal-new-cancel">Cancelar</button><button class="btn btn-accent" id="modal-new-create"><i class="ti ti-check"></i>Crear</button></div>
+</div></div>
+
+<!-- Nueva tabla con plantillas -->
+<div class="modal-bg" id="modal-table"><div class="modal modal-lg">
+  <h3><i class="ti ti-table-plus" style="color:var(--accent);margin-right:6px"></i>Nueva tabla</h3>
+  <div class="form-group"><label class="form-label">Plantilla</label>
+    <div class="tpl-grid" id="tpl-grid">
+      <div class="tpl-card selected" data-tpl="horario"><div class="tpl-icon"><i class="ti ti-clock"></i></div><div class="tpl-name">Horario</div><div class="tpl-desc">Horas y días de la semana</div></div>
+      <div class="tpl-card" data-tpl="rutina"><div class="tpl-icon"><i class="ti ti-repeat"></i></div><div class="tpl-name">Rutina</div><div class="tpl-desc">Hábitos y actividades</div></div>
+      <div class="tpl-card" data-tpl="comidas"><div class="tpl-icon"><i class="ti ti-salad"></i></div><div class="tpl-name">Comidas</div><div class="tpl-desc">Plan alimenticio semanal</div></div>
+      <div class="tpl-card" data-tpl="tareas"><div class="tpl-icon"><i class="ti ti-checklist"></i></div><div class="tpl-name">Tareas</div><div class="tpl-desc">Lista con prioridad y estado</div></div>
+      <div class="tpl-card" data-tpl="gastos"><div class="tpl-icon"><i class="ti ti-coin"></i></div><div class="tpl-name">Gastos</div><div class="tpl-desc">Ingresos y egresos</div></div>
+      <div class="tpl-card" data-tpl="libre"><div class="tpl-icon"><i class="ti ti-table"></i></div><div class="tpl-name">Libre</div><div class="tpl-desc">Tabla vacía personalizada</div></div>
     </div>
   </div>
-</div>
+  <div class="form-group"><label class="form-label">Título</label><input type="text" id="table-note-title-input" class="form-input" placeholder="Ej: Mi horario semanal"></div>
+  <div class="form-group"><label class="form-label">Carpeta</label><select id="new-table-folder" class="form-input form-select"><option value="">Sin carpeta</option></select></div>
+  <div class="modal-actions"><button class="btn btn-ghost" id="modal-table-cancel">Cancelar</button><button class="btn btn-accent" id="modal-table-create"><i class="ti ti-check"></i>Crear tabla</button></div>
+</div></div>
+
+<!-- Nueva carpeta -->
+<div class="modal-bg" id="modal-folder"><div class="modal">
+  <h3><i class="ti ti-folder-plus" style="color:var(--accent);margin-right:6px"></i>Nueva carpeta</h3>
+  <div class="form-group"><label class="form-label">Nombre</label><input type="text" id="folder-name-input" class="form-input" placeholder="Ej: Trabajo, Personal..."></div>
+  <div class="form-group"><label class="form-label">Carpeta padre (opcional)</label><select id="parent-folder-select" class="form-input form-select"><option value="">Raíz</option></select></div>
+  <div class="modal-actions"><button class="btn btn-ghost" id="modal-folder-cancel">Cancelar</button><button class="btn btn-accent" id="modal-folder-create"><i class="ti ti-check"></i>Crear</button></div>
+</div></div>
+
+<!-- Temas -->
+<div class="modal-bg" id="modal-theme"><div class="modal">
+  <h3><i class="ti ti-palette" style="color:var(--accent);margin-right:6px"></i>Tema</h3>
+  <div class="theme-grid">
+    <div class="theme-card active" data-theme-val="light">
+      <div class="theme-swatch"><span style="background:#F7F6F3"></span><span style="background:#fff"></span><span style="background:#6B5CE7"></span></div>
+      <div class="theme-name">Claro</div>
+    </div>
+    <div class="theme-card" data-theme-val="dark">
+      <div class="theme-swatch"><span style="background:#1C1C1A"></span><span style="background:#242422"></span><span style="background:#8B7CF8"></span></div>
+      <div class="theme-name">Oscuro</div>
+    </div>
+    <div class="theme-card" data-theme-val="amoled">
+      <div class="theme-swatch"><span style="background:#000"></span><span style="background:#0A0A0A"></span><span style="background:#A78BFA"></span></div>
+      <div class="theme-name">AMOLED</div>
+    </div>
+    <div class="theme-card" data-theme-val="purple">
+      <div class="theme-swatch"><span style="background:#F5F3FF"></span><span style="background:#EDE9FE"></span><span style="background:#7C3AED"></span></div>
+      <div class="theme-name">Morado</div>
+    </div>
+  </div>
+  <div class="modal-actions"><button class="btn btn-accent" id="modal-theme-close">Cerrar</button></div>
+</div></div>
+
+<!-- Atajos de teclado -->
+<div class="modal-bg" id="modal-shortcuts"><div class="modal modal-lg">
+  <h3><i class="ti ti-keyboard" style="color:var(--accent);margin-right:6px"></i>Atajos de teclado</h3>
+  <table class="shortcuts-table">
+    <tr><td>Nueva nota</td><td><span class="kbd">Ctrl</span> <span class="kbd">N</span></td></tr>
+    <tr><td>Nueva tabla</td><td><span class="kbd">Ctrl</span> <span class="kbd">Shift</span> <span class="kbd">N</span></td></tr>
+    <tr><td>Buscar</td><td><span class="kbd">Ctrl</span> <span class="kbd">F</span></td></tr>
+    <tr><td>Guardar</td><td><span class="kbd">Ctrl</span> <span class="kbd">S</span></td></tr>
+    <tr><td>Favorita</td><td><span class="kbd">Ctrl</span> <span class="kbd">Shift</span> <span class="kbd">F</span></td></tr>
+    <tr><td>Negrita</td><td><span class="kbd">Ctrl</span> <span class="kbd">B</span></td></tr>
+    <tr><td>Cursiva</td><td><span class="kbd">Ctrl</span> <span class="kbd">I</span></td></tr>
+    <tr><td>Subrayado</td><td><span class="kbd">Ctrl</span> <span class="kbd">U</span></td></tr>
+    <tr><td>Eliminar nota</td><td><span class="kbd">Del</span> (sin foco en editor)</td></tr>
+    <tr><td>Tema</td><td><span class="kbd">T</span> (sin foco en editor)</td></tr>
+    <tr><td>Ver atajos</td><td><span class="kbd">?</span></td></tr>
+    <tr><td>Cerrar modal</td><td><span class="kbd">Esc</span></td></tr>
+  </table>
+  <div class="modal-actions"><button class="btn btn-accent" id="modal-shortcuts-close">Cerrar</button></div>
+</div></div>
+
+<!-- Historial -->
+<div class="modal-bg" id="modal-history"><div class="modal modal-lg">
+  <h3><i class="ti ti-history" style="color:var(--accent);margin-right:6px"></i>Historial de cambios</h3>
+  <p style="font-size:12px;color:var(--text3);margin-bottom:12px">Últimas versiones guardadas automáticamente. Haz clic para restaurar.</p>
+  <div class="history-list" id="history-list"></div>
+  <div class="modal-actions"><button class="btn btn-accent" id="modal-history-close">Cerrar</button></div>
+</div></div>
+
+<!-- Exportar nota -->
+<div class="modal-bg" id="modal-export"><div class="modal">
+  <h3><i class="ti ti-file-export" style="color:var(--accent);margin-right:6px"></i>Exportar nota</h3>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <button class="btn" id="export-json-btn" style="justify-content:flex-start"><i class="ti ti-file-type-json"></i>Exportar como JSON</button>
+    <button class="btn" id="export-txt-btn" style="justify-content:flex-start"><i class="ti ti-file-type-txt"></i>Exportar como TXT</button>
+    <button class="btn" id="export-html-btn" style="justify-content:flex-start"><i class="ti ti-file-type-html"></i>Exportar como HTML</button>
+    <button class="btn hidden" id="export-csv-modal-btn" style="justify-content:flex-start"><i class="ti ti-file-type-csv"></i>Exportar tabla como CSV</button>
+  </div>
+  <div class="modal-actions"><button class="btn btn-ghost" id="modal-export-close">Cancelar</button></div>
+</div></div>
+
+<!-- Link modal -->
+<div class="modal-bg" id="modal-link"><div class="modal">
+  <h3><i class="ti ti-link" style="color:var(--accent);margin-right:6px"></i>Insertar enlace</h3>
+  <div class="form-group"><label class="form-label">URL</label><input type="text" id="link-url-input" class="form-input" placeholder="https://..."></div>
+  <div class="form-group"><label class="form-label">Texto (opcional)</label><input type="text" id="link-text-input" class="form-input" placeholder="Texto del enlace"></div>
+  <div class="modal-actions"><button class="btn btn-ghost" id="modal-link-cancel">Cancelar</button><button class="btn btn-accent" id="modal-link-insert"><i class="ti ti-check"></i>Insertar</button></div>
+</div></div>
+
+<!-- Context menu -->
+<div class="ctx-menu hidden" id="ctx-menu"></div>
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toast-wrap" aria-live="polite"></div>
 
 <script>
-/* ===================================================
-   BLOC DE NOTAS — IndexedDB + Editor de texto + Tablas
-   =================================================== */
+/* ============================================================
+   NOTAS PRO — JavaScript completo
+   ============================================================ */
 
-const DB_NAME  = 'NotasDB';
-const STORE    = 'notas';
-const DB_VER   = 1;
+/* ---------- Constantes ---------- */
+const DB_NAME = 'NotasProDB', DB_VER = 3;
+const STORES = { notes: 'notes', folders: 'folders', history: 'history' };
 
-let db, notes = [], currentId = null, currentMode = 'text';
-let saveTimer = null, selectedTpl = 'libre';
-
-/* ---------- Plantillas de tabla ---------- */
 const TEMPLATES = {
-  horario: {
-    cols: ['Hora','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'],
-    rows: [
-      ['6:00'],['7:00'],['8:00'],['9:00'],['10:00'],['11:00'],['12:00'],
-      ['13:00'],['14:00'],['15:00'],['16:00'],['17:00'],['18:00'],['19:00'],
-      ['20:00'],['21:00'],['22:00']
-    ]
-  },
-  rutina: {
-    cols: ['Actividad','Hora','Duración','Días','Estado'],
-    rows: [
-      ['Despertarme','6:00','5 min','Lun-Dom','✅'],
-      ['Ejercicio','6:30','45 min','Lun-Vie','✅'],
-      ['Desayuno','7:30','20 min','Lun-Dom','✅'],
-      ['Trabajo','8:00','8 hrs','Lun-Vie','⏳'],
-      ['Lectura','21:00','30 min','Lun-Dom','⏳'],
-      ['Dormir','22:30','8 hrs','Lun-Dom','✅']
-    ]
-  },
-  comidas: {
-    cols: ['Día','Desayuno','Media mañana','Comida','Merienda','Cena'],
-    rows: [
-      ['Lunes'],['Martes'],['Miércoles'],['Jueves'],
-      ['Viernes'],['Sábado'],['Domingo']
-    ]
-  },
-  tareas: {
-    cols: ['Tarea','Descripción','Prioridad','Vence','Estado'],
-    rows: [
-      ['','','Alta','','Pendiente'],
-      ['','','Media','','En progreso'],
-      ['','','Baja','','Completada']
-    ]
-  },
-  gastos: {
-    cols: ['Fecha','Concepto','Categoría','Ingreso','Gasto','Balance'],
-    rows: [
-      ['','','Alimentación','','',''],
-      ['','','Transporte','','',''],
-      ['','','Servicios','','',''],
-      ['','','Entretenimiento','','',''],
-      ['TOTAL','','','','','']
-    ]
-  },
-  libre: {
-    cols: ['Columna 1','Columna 2','Columna 3'],
-    rows: [['','',''],['','',''],['','','']]
-  }
+  horario: { cols:['Hora','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'], rows:[['6:00'],['7:00'],['8:00'],['9:00'],['10:00'],['11:00'],['12:00'],['13:00'],['14:00'],['15:00'],['16:00'],['17:00'],['18:00'],['19:00'],['20:00'],['21:00'],['22:00']] },
+  rutina:  { cols:['Actividad','Hora','Duración','Días','Estado'], rows:[['Despertarme','6:00','5 min','Lun-Dom','✅'],['Ejercicio','6:30','45 min','Lun-Vie','✅'],['Desayuno','7:30','20 min','Lun-Dom','✅'],['Trabajo','8:00','8 hrs','Lun-Vie','⏳'],['Lectura','21:00','30 min','Lun-Dom','⏳'],['Dormir','22:30','8 hrs','Lun-Dom','✅']] },
+  comidas: { cols:['Día','Desayuno','Media mañana','Comida','Merienda','Cena'], rows:[['Lunes'],['Martes'],['Miércoles'],['Jueves'],['Viernes'],['Sábado'],['Domingo']] },
+  tareas:  { cols:['Tarea','Descripción','Prioridad','Vence','Estado'], rows:[['','','Alta','','Pendiente'],['','','Media','','En progreso'],['','','Baja','','Completada']] },
+  gastos:  { cols:['Fecha','Concepto','Categoría','Ingreso','Gasto','Balance'], rows:[['','','Alimentación','','',''],['','','Transporte','','',''],['','','Servicios','','',''],['TOTAL','','','','','']] },
+  libre:   { cols:['Columna 1','Columna 2','Columna 3'], rows:[['','',''],['','',''],['','','']] }
 };
 
-/* ============================================
-   IndexedDB — apertura y operaciones CRUD
-   ============================================ */
+const NOTE_TEMPLATES = [
+  { id:'meeting', name:'Reunión', icon:'ti-users', content:'<h1>Reunión</h1><p><strong>Fecha:</strong> </p><p><strong>Participantes:</strong> </p><h2>Agenda</h2><ul><li>Punto 1</li><li>Punto 2</li></ul><h2>Acuerdos</h2><ul><li></li></ul>' },
+  { id:'daily', name:'Diario', icon:'ti-calendar', content:'<h1>Diario</h1><p><strong>Estado de ánimo:</strong> 😊</p><p><strong>Lo mejor del día:</strong> </p><h2>Notas del día</h2><p></p><h2>Mañana</h2><ul><li></li></ul>' },
+  { id:'ideas', name:'Ideas', icon:'ti-bulb', content:'<h1>Ideas</h1><h2>💡 Idea principal</h2><p></p><h2>Detalles</h2><ul><li></li></ul><h2>Siguientes pasos</h2><ul><li></li></ul>' },
+  { id:'blank', name:'En blanco', icon:'ti-file', content:'' }
+];
+
+/* ---------- Estado global ---------- */
+let db, notes = [], folders = [], history = {};
+let currentId = null, currentMode = 'rich';
+let currentView = 'all', currentFolder = null, currentTag = null;
+let sortBy = 'updated', selectedTpl = 'horario';
+let saveTimer = null, autoSaveTimer = null;
+let isAddingTag = false;
+
+/* ============================================================
+   IndexedDB
+   ============================================================ */
 function openDB() {
   return new Promise((res, rej) => {
     const req = indexedDB.open(DB_NAME, DB_VER);
     req.onupgradeneeded = e => {
-      e.target.result.createObjectStore(STORE, { keyPath: 'id' });
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains(STORES.notes))
+        d.createObjectStore(STORES.notes, { keyPath: 'id' });
+      if (!d.objectStoreNames.contains(STORES.folders))
+        d.createObjectStore(STORES.folders, { keyPath: 'id' });
+      if (!d.objectStoreNames.contains(STORES.history))
+        d.createObjectStore(STORES.history, { keyPath: 'key' });
     };
-    req.onsuccess = e => { db = e.target.result; res(db); };
-    req.onerror   = e => rej(e);
+    req.onsuccess = e => { db = e.target.result; res(); };
+    req.onerror = e => rej(e);
   });
 }
+const tx = (store, mode = 'readonly') => db.transaction(store, mode).objectStore(store);
+const dbGetAll = store => new Promise((res, rej) => { const r = tx(store).getAll(); r.onsuccess = e => res(e.target.result); r.onerror = rej; });
+const dbPut = (store, obj) => new Promise((res, rej) => { const r = tx(store,'readwrite').put(obj); r.onsuccess = e => res(e.target.result); r.onerror = rej; });
+const dbDelete = (store, id) => new Promise((res, rej) => { const r = tx(store,'readwrite').delete(id); r.onsuccess = () => res(); r.onerror = rej; });
+const dbGet = (store, id) => new Promise((res, rej) => { const r = tx(store).get(id); r.onsuccess = e => res(e.target.result); r.onerror = rej; });
 
-function dbGetAll() {
-  return new Promise((res, rej) => {
-    const req = db.transaction(STORE, 'readonly').objectStore(STORE).getAll();
-    req.onsuccess = e => res(e.target.result);
-    req.onerror   = e => rej(e);
-  });
-}
-
-function dbPut(note) {
-  return new Promise((res, rej) => {
-    const req = db.transaction(STORE, 'readwrite').objectStore(STORE).put(note);
-    req.onsuccess = e => res(e.target.result);
-    req.onerror   = e => rej(e);
-  });
-}
-
-function dbDelete(id) {
-  return new Promise((res, rej) => {
-    const req = db.transaction(STORE, 'readwrite').objectStore(STORE).delete(id);
-    req.onsuccess = () => res();
-    req.onerror   = e => rej(e);
-  });
-}
-
-/* ============================================
+/* ============================================================
    Utilidades
-   ============================================ */
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+   ============================================================ */
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
+const escH = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const $ = id => document.getElementById(id);
+const on = (el, ev, fn) => el && el.addEventListener(ev, fn);
+
+function sanitize(html) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  tmp.querySelectorAll('script,iframe,object,embed').forEach(el => el.remove());
+  tmp.querySelectorAll('[onerror],[onclick],[onload],[onmouseover]').forEach(el => {
+    ['onerror','onclick','onload','onmouseover'].forEach(a => el.removeAttribute(a));
+  });
+  return tmp.innerHTML;
 }
 
-function escH(s) {
-  return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function toast(msg, type = '') {
+  const wrap = $('toast-wrap');
+  const t = document.createElement('div');
+  t.className = 'toast' + (type ? ' toast-' + type : '');
+  const icon = type === 'success' ? 'ti-check' : type === 'error' ? 'ti-x' : 'ti-info-circle';
+  t.innerHTML = `<i class="ti ${icon}"></i>${escH(msg)}`;
+  wrap.appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 250); }, 2500);
 }
 
-/* ============================================
-   Sidebar — lista de notas
-   ============================================ */
-function renderSidebar(filter = '') {
-  const list = document.getElementById('notes-list');
-  const q    = filter.toLowerCase();
-  const filtered = notes.filter(n =>
-    n.title.toLowerCase().includes(q) ||
-    (n.content || '').toLowerCase().includes(q)
+function download(filename, content, mime = 'text/plain') {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], { type: mime }));
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ============================================================
+   Markdown parser (básico)
+   ============================================================ */
+function parseMarkdown(md) {
+  if (!md) return '';
+  let html = escH(md);
+  // headings
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+  // bold, italic, code
+  html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // strikethrough
+  html = html.replace(/~~(.+?)~~/g, '<del>$1</del>');
+  // links & images
+  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  // blockquote
+  html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+  // hr
+  html = html.replace(/^---$/gm, '<hr>');
+  // lists
+  html = html.replace(/^\* (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+  // wrap consecutive <li>
+  html = html.replace(/(<li>.*<\/li>\n?)+/g, m => '<ul>' + m + '</ul>');
+  // code block
+  html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+  // paragraphs
+  html = html.split('\n\n').map(p => {
+    p = p.trim();
+    if (!p) return '';
+    if (/^<(h[1-6]|ul|ol|li|blockquote|pre|hr)/.test(p)) return p;
+    return '<p>' + p.replace(/\n/g, '<br>') + '</p>';
+  }).join('\n');
+  return html;
+}
+
+/* ============================================================
+   Sidebar — carpetas
+   ============================================================ */
+function renderFolders() {
+  const tree = $('folders-tree');
+  const roots = folders.filter(f => !f.parentId);
+  tree.innerHTML = roots.map(f => renderFolderNode(f, 0)).join('');
+  tree.querySelectorAll('[data-folder-id]').forEach(el => {
+    on(el, 'click', e => {
+      e.stopPropagation();
+      selectFolder(el.dataset.folderId);
+    });
+  });
+  tree.querySelectorAll('.folder-toggle').forEach(btn => {
+    on(btn, 'click', e => {
+      e.stopPropagation();
+      const ch = btn.closest('.folder-item').querySelector('.folder-children');
+      if (ch) { ch.classList.toggle('collapsed'); btn.classList.toggle('open'); }
+    });
+  });
+}
+
+function renderFolderNode(folder, depth) {
+  const children = folders.filter(f => f.parentId === folder.id);
+  const noteCount = notes.filter(n => n.folderId === folder.id && !n.trashed).length;
+  const isActive = currentFolder === folder.id;
+  return `
+    <div class="folder-item">
+      <div class="sidebar-item${isActive ? ' active' : ''} depth-${depth}" data-folder-id="${folder.id}" role="button" tabindex="0"
+           style="padding-left:${10 + depth * 14}px">
+        ${children.length ? `<button class="folder-toggle open" aria-label="Expandir carpeta"><i class="ti ti-chevron-right" style="font-size:13px"></i></button>` : '<span style="width:18px;flex-shrink:0"></span>'}
+        <i class="ti ti-folder" style="font-size:15px"></i>
+        <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escH(folder.name)}</span>
+        <span class="item-count">${noteCount}</span>
+      </div>
+      ${children.length ? `<div class="folder-children">${children.map(c => renderFolderNode(c, depth + 1)).join('')}</div>` : ''}
+    </div>`;
+}
+
+function selectFolder(id) {
+  currentFolder = id;
+  currentView = 'folder';
+  currentTag = null;
+  updateViewLabel();
+  setActiveSidebarItem(null);
+  renderNotesList();
+}
+
+function setActiveSidebarItem(view) {
+  document.querySelectorAll('.sidebar-item[data-view]').forEach(el =>
+    el.classList.toggle('active', el.dataset.view === view)
   );
+}
+
+/* ============================================================
+   Tags sidebar
+   ============================================================ */
+function getAllTags() {
+  const set = new Set();
+  notes.filter(n => !n.trashed).forEach(n => (n.tags || []).forEach(t => set.add(t)));
+  return [...set].sort();
+}
+
+function renderTagsSidebar() {
+  const area = $('tags-area');
+  const tags = getAllTags();
+  area.innerHTML = tags.length
+    ? tags.map(t => `<span class="tag-pill${currentTag === t ? ' active' : ''}" data-tag="${escH(t)}">#${escH(t)}</span>`).join('')
+    : `<span style="font-size:12px;color:var(--text3);padding:4px 8px">Sin etiquetas</span>`;
+  area.querySelectorAll('.tag-pill').forEach(p => {
+    on(p, 'click', () => {
+      currentTag = currentTag === p.dataset.tag ? null : p.dataset.tag;
+      currentView = currentTag ? 'tag' : 'all';
+      currentFolder = null;
+      setActiveSidebarItem(currentTag ? null : 'all');
+      updateViewLabel();
+      renderNotesList();
+      renderTagsSidebar();
+    });
+  });
+}
+
+/* ============================================================
+   Notes list panel
+   ============================================================ */
+function getFilteredNotes() {
+  let list = [...notes];
+  // view filter
+  if (currentView === 'trash') return list.filter(n => n.trashed);
+  list = list.filter(n => !n.trashed);
+  if (currentView === 'favorites') list = list.filter(n => n.favorite);
+  if (currentView === 'folder') list = list.filter(n => n.folderId === currentFolder);
+  if (currentView === 'tag' && currentTag) list = list.filter(n => (n.tags || []).includes(currentTag));
+  // search
+  const q = $('search-input').value.trim().toLowerCase();
+  if (q) {
+    list = list.filter(n =>
+      n.title.toLowerCase().includes(q) ||
+      (n.content || '').replace(/<[^>]+>/g, ' ').toLowerCase().includes(q) ||
+      (n.tags || []).some(t => t.toLowerCase().includes(q))
+    );
+  }
+  // sort
+  if (sortBy === 'alpha') list.sort((a, b) => a.title.localeCompare(b.title, 'es'));
+  else if (sortBy === 'created') list.sort((a, b) => b.createdAt - a.createdAt);
+  else list.sort((a, b) => b.updatedAt - a.updatedAt);
+  return list;
+}
+
+function renderNotesList() {
+  const list = $('notes-list');
+  const filtered = getFilteredNotes();
+  updateCounts();
+  renderTagsSidebar();
+  renderFolders();
+  populateFolderSelects();
 
   if (!filtered.length) {
-    list.innerHTML = `
-      <div class="empty-state" style="margin-top:2rem">
-        <i class="ti ti-notes" aria-hidden="true"></i>
-        <p>${filter ? 'Sin resultados' : 'Sin notas aún'}</p>
-      </div>`;
+    list.innerHTML = `<div class="empty-list"><i class="ti ti-notes"></i><p>${$('search-input').value ? 'Sin resultados para tu búsqueda' : 'Esta vista está vacía'}</p></div>`;
     return;
   }
+  list.innerHTML = filtered.map(n => {
+    const preview = n.type === 'table'
+      ? (n.tableData?.cols || []).join(', ')
+      : (n.content || '').replace(/<[^>]+>/g, ' ').trim().slice(0, 80);
+    const date = new Date(n.updatedAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' });
+    const tagsHtml = (n.tags || []).map(t => `<span class="note-tag">#${escH(t)}</span>`).join('');
+    return `
+      <div class="note-card${n.id === currentId ? ' active' : ''}" data-id="${n.id}" role="listitem" tabindex="0" aria-label="${escH(n.title || 'Sin título')}">
+        <div class="note-card-header">
+          <div class="note-card-title">${escH(n.title || 'Sin título')}</div>
+          ${n.favorite ? '<i class="ti ti-star note-card-star" aria-label="Favorita"></i>' : ''}
+        </div>
+        <div class="note-card-preview">${escH(preview || 'Sin contenido')}</div>
+        ${tagsHtml ? `<div class="note-tags">${tagsHtml}</div>` : ''}
+        <div class="note-card-meta">
+          <span class="note-type-badge ${n.type === 'table' ? 'badge-tabla' : 'badge-nota'}">${n.type === 'table' ? 'Tabla' : 'Nota'}</span>
+          <span class="note-date">${date}</span>
+        </div>
+      </div>`;
+  }).join('');
 
-  list.innerHTML = filtered
-    .sort((a, b) => b.updatedAt - a.updatedAt)
-    .map(n => {
-      const isActive = n.id === currentId;
-      const preview  = n.type === 'table'
-        ? (n.tableData?.cols || []).join(', ')
-        : (n.content || '').replace(/<[^>]+>/g, ' ').trim().slice(0, 60);
-      const date = new Date(n.updatedAt).toLocaleDateString('es-MX', {
-        day: '2-digit', month: 'short'
-      });
-      return `
-        <div class="note-item${isActive ? ' active' : ''}" data-id="${n.id}" role="button" tabindex="0">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-            <div class="tag-badge ${n.type === 'table' ? 'tag-tabla' : 'tag-nota'}">
-              ${n.type === 'table' ? 'Tabla' : 'Nota'}
-            </div>
-          </div>
-          <div class="note-item-title">${n.title || 'Sin título'}</div>
-          <div class="note-item-preview">${preview || 'Vacía'}</div>
-          <div class="note-item-meta">
-            <i class="ti ti-clock-hour-4" style="font-size:11px"></i>${date}
-          </div>
-        </div>`;
-    }).join('');
-
-  list.querySelectorAll('.note-item').forEach(el => {
-    el.addEventListener('click',   () => openNote(el.dataset.id));
-    el.addEventListener('keydown', e => { if (e.key === 'Enter') openNote(el.dataset.id); });
+  list.querySelectorAll('.note-card').forEach(el => {
+    on(el, 'click', () => openNote(el.dataset.id));
+    on(el, 'keydown', e => { if (e.key === 'Enter') openNote(el.dataset.id); });
+    on(el, 'contextmenu', e => { e.preventDefault(); showContextMenu(e, el.dataset.id); });
   });
 }
 
-/* ============================================
-   Abrir y mostrar una nota
-   ============================================ */
+function updateCounts() {
+  $('count-all').textContent = notes.filter(n => !n.trashed).length;
+  $('count-fav').textContent = notes.filter(n => n.favorite && !n.trashed).length;
+  $('count-trash').textContent = notes.filter(n => n.trashed).length;
+}
+
+function updateViewLabel() {
+  const labels = { all:'Todas las notas', favorites:'Favoritas', trash:'Papelera' };
+  if (currentView === 'folder') {
+    const f = folders.find(f => f.id === currentFolder);
+    $('panel-title').textContent = f ? f.name : 'Carpeta';
+  } else if (currentView === 'tag') {
+    $('panel-title').textContent = '#' + (currentTag || '');
+  } else {
+    $('panel-title').textContent = labels[currentView] || 'Notas';
+  }
+}
+
+/* ============================================================
+   Open / display note
+   ============================================================ */
 function openNote(id) {
   currentId = id;
   const note = notes.find(n => n.id === id);
   if (!note) return;
 
-  document.getElementById('empty-main').style.display  = 'none';
-  const ep = document.getElementById('editor-panel');
+  $('main-empty').classList.add('hidden');
+  const ep = $('editor-panel');
+  ep.classList.remove('hidden');
   ep.style.display = 'flex';
 
-  document.getElementById('note-title').value  = note.title || '';
-  document.getElementById('table-title').value = note.title || '';
+  // star button
+  $('btn-star').innerHTML = note.favorite
+    ? '<i class="ti ti-star-filled" style="color:var(--star)"></i>'
+    : '<i class="ti ti-star"></i>';
 
-  const date = new Date(note.updatedAt).toLocaleString('es-MX', {
-    dateStyle: 'medium', timeStyle: 'short'
+  // date
+  const date = new Date(note.updatedAt).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' });
+  $('note-date').textContent = date;
+
+  // mode tabs visibility
+  const isTable = note.type === 'table';
+  document.querySelectorAll('.mode-tab[data-mode="rich"],.mode-tab[data-mode="markdown"],.mode-tab[data-mode="preview"]').forEach(t => {
+    t.style.display = isTable ? 'none' : '';
   });
-  document.getElementById('note-date').textContent = 'Editado: ' + date;
+  document.querySelector('.mode-tab[data-mode="table"]').style.display = isTable ? '' : 'none';
 
-  if (note.type === 'table') {
-    setMode('table');
+  if (isTable) {
+    setEditorMode('table');
+    $('table-title').value = note.title || '';
     renderTable(note.tableData || { cols: [], rows: [] });
-    document.getElementById('word-count').textContent = '';
   } else {
-    setMode('text');
-    document.getElementById('content-editor').innerHTML = note.content || '';
+    const mode = ['rich','markdown','preview'].includes(currentMode) ? currentMode : 'rich';
+    setEditorMode(mode);
+    $('note-title').value = note.title || '';
+    $('md-title').value = note.title || '';
+    if (mode === 'rich') {
+      $('content-editor').innerHTML = sanitize(note.content || '');
+    } else {
+      $('md-editor').value = note.mdContent || '';
+      updateMdPreview();
+    }
     updateWordCount();
   }
 
-  renderSidebar(document.getElementById('search-input').value);
+  renderTagEditor(note);
+  populateFolderSelects();
+  const folderSel = $('note-folder-select');
+  if (folderSel) folderSel.value = note.folderId || '';
+
+  renderNotesList();
 }
 
-/* ============================================
-   Cambiar modo texto ↔ tabla
-   ============================================ */
-function setMode(m) {
-  currentMode = m;
-  document.querySelectorAll('.mode-tab').forEach(t =>
-    t.classList.toggle('active', t.dataset.mode === m)
-  );
-  document.getElementById('text-panel').style.display  = m === 'text'  ? 'block' : 'none';
-  document.getElementById('table-panel').style.display = m === 'table' ? 'block' : 'none';
+function setEditorMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+  $('rich-panel').classList.toggle('hidden', mode !== 'rich');
+  $('rich-panel').style.display = mode === 'rich' ? 'flex' : 'none';
+  $('md-panel').classList.toggle('hidden', mode !== 'markdown');
+  $('md-panel').style.display = mode === 'markdown' ? 'flex' : 'none';
+  $('preview-panel').classList.toggle('hidden', mode !== 'preview');
+  $('preview-panel').style.display = mode === 'preview' ? 'block' : 'none';
+  $('table-panel').classList.toggle('hidden', mode !== 'table');
+  $('table-panel').style.display = mode === 'table' ? 'block' : 'none';
 }
 
-/* ============================================
-   Tabla editable — render y eventos
-   ============================================ */
-function renderTable(data) {
-  const thead = document.getElementById('table-head');
-  const tbody = document.getElementById('table-body');
-  const cols  = data.cols || [];
-  const rows  = data.rows || [];
+/* ============================================================
+   Tag editor inside note
+   ============================================================ */
+function renderTagEditor(note) {
+  const area = $('tag-editor');
+  const tags = note.tags || [];
+  const pillsHtml = tags.map(t => `
+    <span class="note-tag-editable">
+      #${escH(t)}
+      <span class="remove-tag" data-tag="${escH(t)}" title="Quitar etiqueta" role="button" tabindex="0" aria-label="Quitar ${t}">×</span>
+    </span>`).join('');
+  area.innerHTML = `<span class="meta-item"><i class="ti ti-tag" style="color:var(--text3)"></i></span>${pillsHtml}<button class="add-tag-btn" id="add-tag-btn">+ Etiqueta</button>`;
 
-  thead.innerHTML = `<tr>
-    ${cols.map((c, i) => `
-      <th>
-        <div class="col-header">
-          <input class="cell-input" value="${escH(c)}" data-col="${i}" placeholder="Columna ${i + 1}">
-          <button class="del-col" data-col="${i}" title="Eliminar columna">
-            <i class="ti ti-x"></i>
-          </button>
-        </div>
-      </th>`).join('')}
-    <th class="row-actions"></th>
-  </tr>`;
-
-  tbody.innerHTML = rows.map((r, ri) => `
-    <tr>
-      ${cols.map((_, ci) => `
-        <td>
-          <input class="cell-input" value="${escH(r[ci] || '')}"
-            data-row="${ri}" data-col="${ci}" placeholder="">
-        </td>`).join('')}
-      <td class="row-actions">
-        <button class="del-row" data-row="${ri}" title="Eliminar fila">
-          <i class="ti ti-x"></i>
-        </button>
-      </td>
-    </tr>`).join('');
-
-  bindTableEvents();
-}
-
-function getTableData() {
-  const cols = Array.from(document.querySelectorAll('#table-head .cell-input'))
-    .map(i => i.value);
-  const rows = [];
-  document.querySelectorAll('#table-body tr').forEach(tr => {
-    rows.push(Array.from(tr.querySelectorAll('.cell-input')).map(i => i.value));
-  });
-  return { cols, rows };
-}
-
-function bindTableEvents() {
-  /* Cabeceras */
-  document.querySelectorAll('#table-head .cell-input').forEach(i =>
-    i.addEventListener('input', scheduleSave)
-  );
-
-  /* Celdas de datos */
-  document.querySelectorAll('#table-body .cell-input').forEach(i => {
-    i.addEventListener('input', scheduleSave);
-    i.addEventListener('keydown', e => {
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        const all  = Array.from(document.querySelectorAll('#table-body .cell-input'));
-        const next = all[all.indexOf(i) + 1];
-        if (next) next.focus();
-      }
+  area.querySelectorAll('.remove-tag').forEach(el => {
+    on(el, 'click', async () => {
+      const note = notes.find(n => n.id === currentId);
+      if (!note) return;
+      note.tags = (note.tags || []).filter(t => t !== el.dataset.tag);
+      await dbPut(STORES.notes, note);
+      renderTagEditor(note);
+      renderNotesList();
     });
   });
-
-  /* Eliminar fila */
-  document.querySelectorAll('.del-row').forEach(b =>
-    b.addEventListener('click', () => {
+  on($('add-tag-btn'), 'click', () => {
+    const btn = $('add-tag-btn');
+    btn.style.display = 'none';
+    const inp = document.createElement('input');
+    inp.className = 'tag-input-field';
+    inp.placeholder = 'etiqueta...';
+    area.appendChild(inp);
+    inp.focus();
+    const commit = async () => {
+      const val = inp.value.trim().toLowerCase().replace(/\s+/g, '-');
+      if (val) {
+        const note = notes.find(n => n.id === currentId);
+        if (note) {
+          note.tags = [...new Set([...(note.tags || []), val])];
+          await dbPut(STORES.notes, note);
+        }
+      }
+      inp.remove();
       const note = notes.find(n => n.id === currentId);
-      if (!note) return;
-      note.tableData.rows.splice(parseInt(b.dataset.row), 1);
-      renderTable(note.tableData);
-      scheduleSave();
-    })
-  );
-
-  /* Eliminar columna */
-  document.querySelectorAll('.del-col').forEach(b =>
-    b.addEventListener('click', () => {
-      const note = notes.find(n => n.id === currentId);
-      if (!note) return;
-      const ci = parseInt(b.dataset.col);
-      note.tableData.cols.splice(ci, 1);
-      note.tableData.rows = note.tableData.rows.map(r => { r.splice(ci, 1); return r; });
-      renderTable(note.tableData);
-      scheduleSave();
-    })
-  );
+      if (note) { renderTagEditor(note); renderNotesList(); }
+    };
+    on(inp, 'blur', commit);
+    on(inp, 'keydown', e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') inp.remove(); });
+  });
 }
 
-/* ============================================
-   Guardado automático con debounce
-   ============================================ */
+/* ============================================================
+   Create note
+   ============================================================ */
+async function createNote(title, type, tableData, folderId, content) {
+  const note = {
+    id: uid(), title: title || 'Sin título', type: type || 'text',
+    content: sanitize(content || ''), mdContent: '', tableData: tableData || null,
+    tags: [], folderId: folderId || null, favorite: false, trashed: false,
+    createdAt: Date.now(), updatedAt: Date.now()
+  };
+  notes.push(note);
+  await dbPut(STORES.notes, note);
+  renderNotesList();
+  openNote(note.id);
+  if (type !== 'table') setTimeout(() => $('note-title').focus(), 50);
+}
+
+/* ============================================================
+   Save
+   ============================================================ */
 function scheduleSave() {
-  document.getElementById('save-dot').className    = 'dot saving';
-  document.getElementById('save-status').textContent = 'Guardando...';
+  const dot = $('save-dot'), st = $('save-status');
+  dot.classList.add('saving');
+  st.textContent = 'Guardando...';
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveCurrentNote, 800);
 }
@@ -639,184 +1406,633 @@ async function saveCurrentNote() {
   const note = notes.find(n => n.id === currentId);
   if (!note) return;
 
-  if (currentMode === 'text') {
-    note.title   = document.getElementById('note-title').value;
-    note.content = document.getElementById('content-editor').innerHTML;
+  // Save history snapshot every 2 mins
+  const hKey = `${note.id}_hist`;
+  const now = Date.now();
+  if (!history[note.id] || now - history[note.id] > 120000) {
+    history[note.id] = now;
+    const prev = await dbGet(STORES.history, hKey).catch(() => null);
+    const snapshots = prev ? prev.snapshots : [];
+    snapshots.unshift({ ts: now, title: note.title, content: note.content, mdContent: note.mdContent });
+    if (snapshots.length > 20) snapshots.length = 20;
+    await dbPut(STORES.history, { key: hKey, snapshots });
+  }
+
+  if (currentMode === 'rich') {
+    note.title = $('note-title').value;
+    note.content = sanitize($('content-editor').innerHTML);
     updateWordCount();
-  } else {
-    note.title     = document.getElementById('table-title').value;
+  } else if (currentMode === 'markdown') {
+    note.title = $('md-title').value;
+    note.mdContent = $('md-editor').value;
+    note.content = parseMarkdown(note.mdContent);
+  } else if (currentMode === 'table') {
+    note.title = $('table-title').value;
     note.tableData = getTableData();
   }
 
+  note.folderId = ($('note-folder-select') || {}).value || null;
   note.updatedAt = Date.now();
-  await dbPut(note);
-
-  document.getElementById('save-dot').className      = 'dot';
-  document.getElementById('save-status').textContent = 'Guardado';
-  renderSidebar(document.getElementById('search-input').value);
+  await dbPut(STORES.notes, note);
+  $('save-dot').classList.remove('saving');
+  $('save-status').textContent = 'Guardado';
+  $('note-date').textContent = new Date().toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' });
+  renderNotesList();
 }
 
+/* ============================================================
+   Word / char count
+   ============================================================ */
 function updateWordCount() {
-  const text  = (document.getElementById('content-editor').innerText || '').trim();
+  const text = ($('content-editor').innerText || '').trim();
   const words = text ? text.split(/\s+/).length : 0;
-  document.getElementById('word-count').textContent = words + ' palabra' + (words !== 1 ? 's' : '');
+  const chars = text.length;
+  const mins = Math.max(1, Math.ceil(words / 200));
+  $('word-count').textContent = words + ' palabras';
+  $('char-count').textContent = chars + ' caracteres';
+  $('read-time').textContent = mins + ' min lectura';
 }
 
-/* ============================================
-   Crear nueva nota
-   ============================================ */
-async function createNote(title, type, tableData) {
-  const note = {
-    id: uid(), title, type: type || 'text',
-    content: '', tableData: tableData || null,
-    createdAt: Date.now(), updatedAt: Date.now()
+/* ============================================================
+   Markdown preview
+   ============================================================ */
+function updateMdPreview() {
+  const md = $('md-editor').value;
+  const html = parseMarkdown(md);
+  $('md-preview').innerHTML = html;
+  if ($('preview-only')) $('preview-only').innerHTML = html;
+}
+
+/* ============================================================
+   Table editor
+   ============================================================ */
+function renderTable(data) {
+  const thead = $('table-head'), tbody = $('table-body');
+  const cols = data.cols || [], rows = data.rows || [];
+
+  thead.innerHTML = `<tr>
+    ${cols.map((c, i) => `<th><div class="col-ctrl">
+      <input class="cell-input" value="${escH(c)}" data-col="${i}" placeholder="Col ${i+1}" aria-label="Columna ${i+1}">
+      <button class="del-btn" data-col="${i}" title="Eliminar columna" aria-label="Eliminar columna ${i+1}"><i class="ti ti-x"></i></button>
+    </div></th>`).join('')}
+    <th class="row-meta"></th>
+  </tr>`;
+
+  tbody.innerHTML = rows.map((r, ri) => `<tr class="tr-wrap">
+    ${cols.map((_, ci) => `<td><input class="cell-input" value="${escH(r[ci]||'')}" data-row="${ri}" data-col="${ci}" aria-label="Celda fila ${ri+1} columna ${ci+1}"></td>`).join('')}
+    <td class="row-meta"><button class="del-btn" data-row="${ri}" title="Eliminar fila" aria-label="Eliminar fila ${ri+1}"><i class="ti ti-x"></i></button></td>
+  </tr>`).join('');
+
+  bindTableEvents();
+}
+
+function getTableData() {
+  const cols = [...$('table-head').querySelectorAll('.cell-input')].map(i => i.value);
+  const rows = [...$('table-body').querySelectorAll('tr')].map(tr =>
+    [...tr.querySelectorAll('.cell-input')].map(i => i.value)
+  );
+  return { cols, rows };
+}
+
+function bindTableEvents() {
+  $('table-head').querySelectorAll('.cell-input').forEach(i => on(i, 'input', scheduleSave));
+  $('table-body').querySelectorAll('.cell-input').forEach(i => {
+    on(i, 'input', scheduleSave);
+    on(i, 'keydown', e => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const all = [...$('table-body').querySelectorAll('.cell-input')];
+        const next = all[all.indexOf(i) + 1];
+        if (next) next.focus(); else $('btn-add-rows').click();
+      }
+    });
+  });
+  $('table-head').querySelectorAll('.del-btn').forEach(b => on(b, 'click', async () => {
+    const note = notes.find(n => n.id === currentId); if (!note) return;
+    const ci = +b.dataset.col;
+    note.tableData.cols.splice(ci, 1);
+    note.tableData.rows = note.tableData.rows.map(r => { r.splice(ci, 1); return r; });
+    renderTable(note.tableData); scheduleSave();
+  }));
+  $('table-body').querySelectorAll('.del-btn').forEach(b => on(b, 'click', async () => {
+    const note = notes.find(n => n.id === currentId); if (!note) return;
+    note.tableData.rows.splice(+b.dataset.row, 1);
+    renderTable(note.tableData); scheduleSave();
+  }));
+}
+
+/* ============================================================
+   Folder selects
+   ============================================================ */
+function populateFolderSelects() {
+  ['new-note-folder','new-table-folder','note-folder-select','parent-folder-select'].forEach(id => {
+    const sel = $(id); if (!sel) return;
+    const cur = sel.value;
+    const isParent = id === 'parent-folder-select';
+    sel.innerHTML = `<option value="">${isParent ? 'Raíz' : 'Sin carpeta'}</option>` +
+      folders.map(f => `<option value="${f.id}"${f.id === cur ? ' selected' : ''}>${escH(f.name)}</option>`).join('');
+  });
+}
+
+/* ============================================================
+   Context menu
+   ============================================================ */
+function showContextMenu(e, id) {
+  const note = notes.find(n => n.id === id); if (!note) return;
+  const menu = $('ctx-menu');
+  const actions = note.trashed
+    ? [
+        { icon:'ti-restore', label:'Restaurar nota', fn: () => restoreNote(id) },
+        { icon:'ti-trash-x', label:'Eliminar permanentemente', danger:true, fn: () => deleteForever(id) }
+      ]
+    : [
+        { icon: note.favorite ? 'ti-star-off' : 'ti-star', label: note.favorite ? 'Quitar favorita' : 'Marcar favorita', fn: () => toggleFavorite(id) },
+        { icon:'ti-folder', label:'Mover a carpeta', fn: () => moveFolderPrompt(id) },
+        { sep: true },
+        { icon:'ti-copy', label:'Duplicar nota', fn: () => duplicateNote(id) },
+        { icon:'ti-file-export', label:'Exportar nota', fn: () => { openNote(id); openModal('modal-export'); } },
+        { sep: true },
+        { icon:'ti-trash', label:'Mover a papelera', danger:true, fn: () => trashNote(id) }
+      ];
+
+  menu.innerHTML = actions.map(a => a.sep
+    ? '<div class="ctx-sep"></div>'
+    : `<div class="ctx-item${a.danger ? ' danger' : ''}" data-fn="${a.label}"><i class="ti ${a.icon}"></i>${escH(a.label)}</div>`
+  ).join('');
+
+  menu.querySelectorAll('.ctx-item').forEach((el, i) => {
+    const act = actions.filter(a => !a.sep)[i]; if (!act) return;
+    on(el, 'click', () => { act.fn(); closeContextMenu(); });
+  });
+
+  const x = Math.min(e.clientX, window.innerWidth - 180);
+  const y = Math.min(e.clientY, window.innerHeight - (actions.length * 36 + 16));
+  menu.style.left = x + 'px';
+  menu.style.top = y + 'px';
+  menu.classList.remove('hidden');
+}
+function closeContextMenu() { $('ctx-menu').classList.add('hidden'); }
+on(document, 'click', closeContextMenu);
+
+/* ============================================================
+   Note actions
+   ============================================================ */
+async function trashNote(id) {
+  const note = notes.find(n => n.id === id); if (!note) return;
+  note.trashed = true; note.updatedAt = Date.now();
+  await dbPut(STORES.notes, note);
+  if (currentId === id) { currentId = null; $('editor-panel').style.display = 'none'; $('main-empty').classList.remove('hidden'); }
+  renderNotesList(); toast('Nota movida a la papelera');
+}
+
+async function restoreNote(id) {
+  const note = notes.find(n => n.id === id); if (!note) return;
+  note.trashed = false; note.updatedAt = Date.now();
+  await dbPut(STORES.notes, note);
+  renderNotesList(); toast('Nota restaurada', 'success');
+}
+
+async function deleteForever(id) {
+  if (!confirm('¿Eliminar definitivamente? Esta acción no se puede deshacer.')) return;
+  notes = notes.filter(n => n.id !== id);
+  await dbDelete(STORES.notes, id);
+  await dbDelete(STORES.history, `${id}_hist`).catch(() => {});
+  if (currentId === id) { currentId = null; $('editor-panel').style.display = 'none'; $('main-empty').classList.remove('hidden'); }
+  renderNotesList(); toast('Nota eliminada permanentemente');
+}
+
+async function toggleFavorite(id) {
+  const note = notes.find(n => n.id === id); if (!note) return;
+  note.favorite = !note.favorite; note.updatedAt = Date.now();
+  await dbPut(STORES.notes, note);
+  if (currentId === id) {
+    $('btn-star').innerHTML = note.favorite
+      ? '<i class="ti ti-star-filled" style="color:var(--star)"></i>'
+      : '<i class="ti ti-star"></i>';
+  }
+  renderNotesList();
+}
+
+async function duplicateNote(id) {
+  const orig = notes.find(n => n.id === id); if (!orig) return;
+  const copy = { ...JSON.parse(JSON.stringify(orig)), id: uid(), title: orig.title + ' (copia)', createdAt: Date.now(), updatedAt: Date.now() };
+  notes.push(copy);
+  await dbPut(STORES.notes, copy);
+  renderNotesList(); openNote(copy.id); toast('Nota duplicada', 'success');
+}
+
+function moveFolderPrompt(id) {
+  const note = notes.find(n => n.id === id); if (!note) return;
+  openNote(id);
+  const sel = $('note-folder-select');
+  if (sel) sel.focus();
+}
+
+/* ============================================================
+   Export / Import
+   ============================================================ */
+function exportNote(note, fmt) {
+  if (fmt === 'json') {
+    download(`${note.title || 'nota'}.json`, JSON.stringify(note, null, 2), 'application/json');
+  } else if (fmt === 'txt') {
+    const txt = (note.content || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    download(`${note.title || 'nota'}.txt`, `${note.title}\n${'='.repeat(note.title.length)}\n\n${txt}`);
+  } else if (fmt === 'html') {
+    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>${escH(note.title)}</title><style>body{font-family:system-ui;max-width:700px;margin:2rem auto;padding:0 1rem;line-height:1.7}h1,h2{margin-top:1.5rem}</style></head><body><h1>${escH(note.title)}</h1>${note.content || ''}</body></html>`;
+    download(`${note.title || 'nota'}.html`, html, 'text/html');
+  } else if (fmt === 'csv' && note.type === 'table') {
+    exportTableCSV(note);
+  }
+}
+
+function exportTableCSV(note) {
+  const td = note.tableData || { cols: [], rows: [] };
+  const toRow = arr => arr.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',');
+  const csv = [toRow(td.cols), ...td.rows.map(toRow)].join('\n');
+  download(`${note.title || 'tabla'}.csv`, csv, 'text/csv;charset=utf-8');
+}
+
+function exportAllNotes() {
+  const data = { version: 1, exported: new Date().toISOString(), notes, folders };
+  download('notas-pro-backup.json', JSON.stringify(data, null, 2), 'application/json');
+  toast('Exportación completa', 'success');
+}
+
+async function importNotes(file) {
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    const importedNotes = data.notes || (Array.isArray(data) ? data : []);
+    const importedFolders = data.folders || [];
+    for (const f of importedFolders) { folders.push(f); await dbPut(STORES.folders, f); }
+    for (const n of importedNotes) { notes.push(n); await dbPut(STORES.notes, n); }
+    renderNotesList(); renderFolders(); populateFolderSelects();
+    toast(`${importedNotes.length} nota(s) importada(s)`, 'success');
+  } catch { toast('Error al importar el archivo', 'error'); }
+}
+
+/* ============================================================
+   Image drag & drop
+   ============================================================ */
+function setupDropZone() {
+  const editor = $('content-editor');
+  const overlay = $('drop-overlay');
+  let dragCnt = 0;
+  on(editor.parentElement, 'dragenter', e => { e.preventDefault(); dragCnt++; overlay.classList.add('active'); });
+  on(editor.parentElement, 'dragleave', () => { dragCnt--; if (dragCnt <= 0) { dragCnt = 0; overlay.classList.remove('active'); } });
+  on(editor.parentElement, 'dragover', e => e.preventDefault());
+  on(editor.parentElement, 'drop', e => {
+    e.preventDefault(); dragCnt = 0; overlay.classList.remove('active');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) insertImage(file);
+  });
+}
+
+function insertImage(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    img.style.maxWidth = '100%';
+    img.style.borderRadius = '8px';
+    $('content-editor').focus();
+    document.execCommand('insertHTML', false, img.outerHTML);
+    scheduleSave();
   };
-  notes.push(note);
-  await dbPut(note);
-  renderSidebar();
-  openNote(note.id);
+  reader.readAsDataURL(file);
 }
 
-/* ============================================
-   Eventos de la interfaz
-   ============================================ */
+/* ============================================================
+   Checklist
+   ============================================================ */
+function insertChecklist() {
+  const item = `<ul style="list-style:none;padding-left:0"><li class="checklist-item"><input type="checkbox"> <span>Tarea</span></li></ul>`;
+  document.execCommand('insertHTML', false, item);
+  $('content-editor').querySelectorAll('.checklist-item input[type=checkbox]').forEach(cb => {
+    if (!cb._bound) {
+      cb._bound = true;
+      on(cb, 'change', () => {
+        cb.closest('.checklist-item').classList.toggle('checked', cb.checked);
+        scheduleSave();
+      });
+    }
+  });
+}
 
-/* Botón "Nueva nota" */
-document.getElementById('btn-new-note').addEventListener('click', () => {
-  document.getElementById('new-note-title').value = '';
-  document.getElementById('modal-new').classList.add('open');
-  setTimeout(() => document.getElementById('new-note-title').focus(), 100);
+function rebindCheckboxes() {
+  $('content-editor').querySelectorAll('.checklist-item input[type=checkbox]').forEach(cb => {
+    if (!cb._bound) {
+      cb._bound = true;
+      on(cb, 'change', () => {
+        cb.closest('.checklist-item').classList.toggle('checked', cb.checked);
+        scheduleSave();
+      });
+    }
+  });
+}
+
+/* ============================================================
+   History modal
+   ============================================================ */
+async function openHistory() {
+  const note = notes.find(n => n.id === currentId); if (!note) return;
+  const hKey = `${note.id}_hist`;
+  const rec = await dbGet(STORES.history, hKey).catch(() => null);
+  const snapshots = rec ? rec.snapshots : [];
+  const list = $('history-list');
+  if (!snapshots.length) {
+    list.innerHTML = '<p style="color:var(--text3);font-size:13px;text-align:center;padding:1rem">Sin historial aún</p>';
+  } else {
+    list.innerHTML = snapshots.map((s, i) => `
+      <div class="history-item" data-idx="${i}">
+        <div class="history-item-title">${escH(s.title || 'Sin título')}</div>
+        <div class="history-item-meta">${new Date(s.ts).toLocaleString('es-MX')}</div>
+      </div>`).join('');
+    list.querySelectorAll('.history-item').forEach(el => {
+      on(el, 'click', async () => {
+        const s = snapshots[+el.dataset.idx];
+        if (!confirm('¿Restaurar esta versión? El contenido actual se perderá.')) return;
+        const note = notes.find(n => n.id === currentId); if (!note) return;
+        note.content = s.content || '';
+        note.mdContent = s.mdContent || '';
+        note.title = s.title || '';
+        note.updatedAt = Date.now();
+        await dbPut(STORES.notes, note);
+        openNote(note.id);
+        closeModal('modal-history');
+        toast('Versión restaurada', 'success');
+      });
+    });
+  }
+  openModal('modal-history');
+}
+
+/* ============================================================
+   Modals
+   ============================================================ */
+function openModal(id) { $(id).classList.add('open'); }
+function closeModal(id) { $(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-bg').forEach(m => {
+  on(m, 'click', e => { if (e.target === m) m.classList.remove('open'); });
 });
-document.getElementById('modal-cancel').addEventListener('click', () =>
-  document.getElementById('modal-new').classList.remove('open')
-);
-document.getElementById('modal-create').addEventListener('click', async () => {
-  const t = document.getElementById('new-note-title').value.trim() || 'Sin título';
-  document.getElementById('modal-new').classList.remove('open');
-  await createNote(t, 'text');
-});
-document.getElementById('new-note-title').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('modal-create').click();
+on(document, 'keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-bg.open').forEach(m => m.classList.remove('open')); });
+
+/* ============================================================
+   Sidebar resize
+   ============================================================ */
+function setupSidebarResize() {
+  const handle = $('sidebar-resize'), sidebar = $('sidebar');
+  let dragging = false, startX = 0, startW = 0;
+  on(handle, 'mousedown', e => { dragging = true; startX = e.clientX; startW = sidebar.offsetWidth; document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none'; });
+  on(document, 'mousemove', e => { if (!dragging) return; const w = Math.max(180, Math.min(380, startW + e.clientX - startX)); sidebar.style.width = w + 'px'; });
+  on(document, 'mouseup', () => { dragging = false; document.body.style.cursor = ''; document.body.style.userSelect = ''; });
+}
+
+/* ============================================================
+   Keyboard shortcuts
+   ============================================================ */
+function setupKeyboard() {
+  on(document, 'keydown', async e => {
+    const focused = document.activeElement;
+    const inEditor = ['INPUT','TEXTAREA','[contenteditable]'].some(s => focused.matches ? focused.matches(s) : false) || focused.contentEditable === 'true';
+
+    if (e.ctrlKey || e.metaKey) {
+      if (e.key === 'n' && !e.shiftKey) { e.preventDefault(); openModal('modal-new'); setTimeout(() => $('new-note-title').focus(), 100); }
+      if (e.key === 'N' && e.shiftKey) { e.preventDefault(); openModal('modal-table'); }
+      if (e.key === 'f' || e.key === 'F') { e.preventDefault(); $('search-input').focus(); $('search-input').select(); }
+      if (e.key === 's') { e.preventDefault(); saveCurrentNote(); toast('Guardado', 'success'); }
+      if ((e.key === 'F' || e.key === 'f') && e.shiftKey && currentId) { e.preventDefault(); toggleFavorite(currentId); }
+    }
+
+    if (!inEditor) {
+      if (e.key === 't' || e.key === 'T') openModal('modal-theme');
+      if (e.key === '?') openModal('modal-shortcuts');
+      if ((e.key === 'Delete' || e.key === 'Backspace') && currentId) {
+        const note = notes.find(n => n.id === currentId);
+        if (note && !note.trashed) { e.preventDefault(); trashNote(currentId); }
+      }
+    }
+  });
+}
+
+/* ============================================================
+   Theme
+   ============================================================ */
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('notasPro_theme', t);
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.toggle('active', c.dataset.themeVal === t));
+}
+
+/* ============================================================
+   Sort
+   ============================================================ */
+document.querySelectorAll('.sort-btn').forEach(btn => {
+  on(btn, 'click', () => {
+    sortBy = btn.dataset.sort;
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === sortBy));
+    renderNotesList();
+  });
 });
 
-/* Botón "Nueva tabla" */
-document.getElementById('btn-new-table').addEventListener('click', () => {
-  selectedTpl = 'libre';
-  document.querySelectorAll('.template-card').forEach(c => c.style.borderColor = '');
-  document.getElementById('table-note-title-input').value = '';
-  document.getElementById('modal-table').classList.add('open');
-});
-document.getElementById('modal-table-cancel').addEventListener('click', () =>
-  document.getElementById('modal-table').classList.remove('open')
-);
+/* ============================================================
+   Event bindings — Buttons
+   ============================================================ */
 
-/* Selección de plantilla */
-document.querySelectorAll('.template-card').forEach(card => {
-  card.addEventListener('click', () => {
+// New note modal
+on($('btn-new-note'), 'click', () => { openModal('modal-new'); setTimeout(() => $('new-note-title').focus(), 100); });
+on($('btn-start'), 'click', () => { openModal('modal-new'); setTimeout(() => $('new-note-title').focus(), 100); });
+on($('modal-new-cancel'), 'click', () => closeModal('modal-new'));
+on($('modal-new-create'), 'click', async () => {
+  const title = $('new-note-title').value.trim();
+  const folder = $('new-note-folder').value;
+  closeModal('modal-new');
+  await createNote(title, 'text', null, folder);
+});
+on($('new-note-title'), 'keydown', e => { if (e.key === 'Enter') $('modal-new-create').click(); });
+
+// New table modal
+on($('btn-new-table'), 'click', () => { openModal('modal-table'); });
+on($('modal-table-cancel'), 'click', () => closeModal('modal-table'));
+on($('modal-table-create'), 'click', async () => {
+  const title = $('table-note-title-input').value.trim() || 'Nueva tabla';
+  const folder = $('new-table-folder').value;
+  const tpl = JSON.parse(JSON.stringify(TEMPLATES[selectedTpl] || TEMPLATES.libre));
+  closeModal('modal-table');
+  await createNote(title, 'table', tpl, folder);
+});
+document.querySelectorAll('.tpl-card').forEach(card => {
+  on(card, 'click', () => {
     selectedTpl = card.dataset.tpl;
-    document.querySelectorAll('.template-card').forEach(c => c.style.borderColor = '');
-    card.style.borderColor = 'var(--accent)';
-    const names = {
-      horario: 'Mi horario semanal', rutina: 'Rutina diaria',
-      comidas: 'Plan de comidas semanal', tareas: 'Lista de tareas',
-      gastos: 'Registro de gastos', libre: 'Nueva tabla'
-    };
-    if (!document.getElementById('table-note-title-input').value)
-      document.getElementById('table-note-title-input').value = names[selectedTpl] || '';
+    document.querySelectorAll('.tpl-card').forEach(c => c.classList.toggle('selected', c.dataset.tpl === selectedTpl));
+    const names = { horario:'Mi horario semanal', rutina:'Rutina diaria', comidas:'Plan de comidas semanal', tareas:'Lista de tareas', gastos:'Registro de gastos', libre:'Nueva tabla' };
+    if (!$('table-note-title-input').value) $('table-note-title-input').value = names[selectedTpl] || '';
   });
 });
 
-document.getElementById('modal-table-create').addEventListener('click', async () => {
-  const t   = document.getElementById('table-note-title-input').value.trim() || 'Nueva tabla';
-  const tpl = TEMPLATES[selectedTpl] || TEMPLATES.libre;
-  document.getElementById('modal-table').classList.remove('open');
-  await createNote(t, 'table', JSON.parse(JSON.stringify(tpl)));
+// Folder modal
+on($('btn-add-folder'), 'click', () => { $('folder-name-input').value = ''; openModal('modal-folder'); setTimeout(() => $('folder-name-input').focus(), 100); });
+on($('modal-folder-cancel'), 'click', () => closeModal('modal-folder'));
+on($('modal-folder-create'), 'click', async () => {
+  const name = $('folder-name-input').value.trim(); if (!name) return;
+  const parentId = $('parent-folder-select').value || null;
+  const folder = { id: uid(), name, parentId, createdAt: Date.now() };
+  folders.push(folder); await dbPut(STORES.folders, folder);
+  closeModal('modal-folder'); renderFolders(); populateFolderSelects(); toast('Carpeta creada', 'success');
 });
+on($('folder-name-input'), 'keydown', e => { if (e.key === 'Enter') $('modal-folder-create').click(); });
 
-/* Estado vacío → crear nota */
-document.getElementById('btn-start').addEventListener('click', () =>
-  document.getElementById('btn-new-note').click()
-);
+// Theme
+on($('btn-theme'), 'click', () => openModal('modal-theme'));
+on($('modal-theme-close'), 'click', () => closeModal('modal-theme'));
+document.querySelectorAll('.theme-card').forEach(c => on(c, 'click', () => setTheme(c.dataset.themeVal)));
 
-/* Eliminar nota */
-document.getElementById('btn-delete-note').addEventListener('click', async () => {
+// Shortcuts
+on($('btn-shortcuts'), 'click', () => openModal('modal-shortcuts'));
+on($('modal-shortcuts-close'), 'click', () => closeModal('modal-shortcuts'));
+
+// History
+on($('btn-history'), 'click', openHistory);
+on($('modal-history-close'), 'click', () => closeModal('modal-history'));
+
+// Star
+on($('btn-star'), 'click', () => currentId && toggleFavorite(currentId));
+
+// Delete
+on($('btn-delete-note'), 'click', () => currentId && trashNote(currentId));
+
+// Export note
+on($('btn-export-note'), 'click', () => {
   if (!currentId) return;
-  if (!confirm('¿Eliminar esta nota?')) return;
-  await dbDelete(currentId);
-  notes = notes.filter(n => n.id !== currentId);
-  currentId = null;
-  document.getElementById('editor-panel').style.display = 'none';
-  document.getElementById('empty-main').style.display   = 'flex';
-  renderSidebar();
+  const note = notes.find(n => n.id === currentId); if (!note) return;
+  $('export-csv-modal-btn').classList.toggle('hidden', note.type !== 'table');
+  openModal('modal-export');
 });
+on($('modal-export-close'), 'click', () => closeModal('modal-export'));
+on($('export-json-btn'), 'click', () => { const n = notes.find(n=>n.id===currentId); if(n) { exportNote(n,'json'); closeModal('modal-export'); toast('Exportado como JSON','success'); } });
+on($('export-txt-btn'), 'click', () => { const n = notes.find(n=>n.id===currentId); if(n) { exportNote(n,'txt'); closeModal('modal-export'); toast('Exportado como TXT','success'); } });
+on($('export-html-btn'), 'click', () => { const n = notes.find(n=>n.id===currentId); if(n) { exportNote(n,'html'); closeModal('modal-export'); toast('Exportado como HTML','success'); } });
+on($('export-csv-modal-btn'), 'click', () => { const n = notes.find(n=>n.id===currentId); if(n) { exportTableCSV(n); closeModal('modal-export'); toast('Exportado como CSV','success'); } });
 
-/* Tabs de modo */
-document.querySelectorAll('.mode-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    if (!currentId) return;
-    setMode(tab.dataset.mode);
-  });
+// Export / import all
+on($('btn-export-all'), 'click', exportAllNotes);
+on($('btn-import'), 'click', () => $('import-file-input').click());
+on($('import-file-input'), 'change', e => { const f = e.target.files[0]; if (f) { importNotes(f); e.target.value=''; } });
+
+// Export CSV from table toolbar
+on($('btn-export-csv'), 'click', () => { const n = notes.find(n=>n.id===currentId); if(n) { exportTableCSV(n); toast('Exportado como CSV','success'); } });
+
+// Table rows/cols
+on($('btn-add-rows'), 'click', () => {
+  const note = notes.find(n => n.id === currentId); if (!note) return;
+  const n = parseInt($('add-rows').value) || 1;
+  for (let i = 0; i < n; i++) note.tableData.rows.push(Array(note.tableData.cols.length).fill(''));
+  renderTable(note.tableData); scheduleSave();
 });
-
-/* Toolbar de formato */
-document.querySelectorAll('.toolbar-btn').forEach(btn => {
-  btn.addEventListener('mousedown', e => {
-    e.preventDefault();
-    document.execCommand(btn.dataset.cmd, false, btn.dataset.val || null);
-    document.getElementById('content-editor').focus();
-  });
-});
-
-/* Guardado en editor de texto */
-document.getElementById('content-editor').addEventListener('input', scheduleSave);
-document.getElementById('note-title').addEventListener('input', scheduleSave);
-document.getElementById('table-title').addEventListener('input', scheduleSave);
-
-/* Agregar filas */
-document.getElementById('btn-add-rows').addEventListener('click', () => {
-  const note = notes.find(n => n.id === currentId);
-  if (!note) return;
-  const n    = parseInt(document.getElementById('add-rows').value) || 1;
-  const cols = note.tableData.cols.length || 3;
-  for (let i = 0; i < n; i++) note.tableData.rows.push(Array(cols).fill(''));
-  renderTable(note.tableData);
-  scheduleSave();
-});
-
-/* Agregar columnas */
-document.getElementById('btn-add-cols').addEventListener('click', () => {
-  const note = notes.find(n => n.id === currentId);
-  if (!note) return;
-  const n = parseInt(document.getElementById('add-cols').value) || 1;
+on($('btn-add-cols'), 'click', () => {
+  const note = notes.find(n => n.id === currentId); if (!note) return;
+  const n = parseInt($('add-cols').value) || 1;
   for (let i = 0; i < n; i++) {
-    note.tableData.cols.push(`Columna ${note.tableData.cols.length + 1}`);
+    note.tableData.cols.push(`Col ${note.tableData.cols.length + 1}`);
     note.tableData.rows.forEach(r => r.push(''));
   }
-  renderTable(note.tableData);
-  scheduleSave();
+  renderTable(note.tableData); scheduleSave();
 });
 
-/* Búsqueda en tiempo real */
-document.getElementById('search-input').addEventListener('input', e =>
-  renderSidebar(e.target.value)
-);
-
-/* Cerrar modales al hacer clic en el fondo */
-document.querySelectorAll('.modal-bg').forEach(m => {
-  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+// Mode tabs
+document.querySelectorAll('.mode-tab').forEach(tab => {
+  on(tab, 'click', () => {
+    if (!currentId) return;
+    const note = notes.find(n => n.id === currentId); if (!note) return;
+    // Sync content before switching
+    if (currentMode === 'rich') note.content = sanitize($('content-editor').innerHTML);
+    if (currentMode === 'markdown') { note.mdContent = $('md-editor').value; note.content = parseMarkdown(note.mdContent); }
+    const newMode = tab.dataset.mode;
+    if (newMode === 'rich') $('content-editor').innerHTML = sanitize(note.content || '');
+    if (newMode === 'markdown') { $('md-editor').value = note.mdContent || ''; updateMdPreview(); }
+    if (newMode === 'preview') { $('preview-only').innerHTML = parseMarkdown(note.mdContent || ''); }
+    setEditorMode(newMode);
+  });
 });
 
-/* ============================================
-   Inicio — abrir IndexedDB y cargar notas
-   ============================================ */
+// Rich toolbar
+document.querySelectorAll('.tb-btn[data-cmd]').forEach(btn => {
+  on(btn, 'mousedown', e => {
+    e.preventDefault();
+    document.execCommand(btn.dataset.cmd, false, btn.dataset.val || null);
+    $('content-editor').focus();
+    scheduleSave();
+  });
+});
+on($('btn-checklist'), 'mousedown', e => { e.preventDefault(); insertChecklist(); scheduleSave(); });
+on($('btn-insert-img'), 'click', () => $('img-file-input').click());
+on($('img-file-input'), 'change', e => { const f = e.target.files[0]; if (f) { insertImage(f); e.target.value = ''; } });
+
+// Link insert
+on($('btn-insert-link'), 'click', () => {
+  $('link-url-input').value = '';
+  $('link-text-input').value = window.getSelection().toString();
+  openModal('modal-link');
+  setTimeout(() => $('link-url-input').focus(), 100);
+});
+on($('modal-link-cancel'), 'click', () => closeModal('modal-link'));
+on($('modal-link-insert'), 'click', () => {
+  const url = $('link-url-input').value.trim(); if (!url) return;
+  const text = $('link-text-input').value.trim() || url;
+  $('content-editor').focus();
+  document.execCommand('insertHTML', false, `<a href="${escH(url)}" target="_blank" rel="noopener">${escH(text)}</a>`);
+  closeModal('modal-link'); scheduleSave();
+});
+
+// Content editor events
+on($('content-editor'), 'input', () => { rebindCheckboxes(); scheduleSave(); updateWordCount(); });
+on($('note-title'), 'input', scheduleSave);
+on($('table-title'), 'input', scheduleSave);
+on($('md-editor'), 'input', () => { updateMdPreview(); scheduleSave(); });
+on($('md-title'), 'input', scheduleSave);
+on($('note-folder-select'), 'change', scheduleSave);
+
+// Search
+on($('search-input'), 'input', () => renderNotesList());
+
+// Sidebar nav items
+document.querySelectorAll('.sidebar-item[data-view]').forEach(item => {
+  on(item, 'click', () => {
+    currentView = item.dataset.view;
+    currentFolder = null; currentTag = null;
+    setActiveSidebarItem(currentView);
+    updateViewLabel();
+    renderNotesList();
+  });
+  on(item, 'keydown', e => { if (e.key === 'Enter') item.click(); });
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
 (async () => {
+  // Theme
+  const savedTheme = localStorage.getItem('notasPro_theme') || 'light';
+  setTheme(savedTheme);
+
+  // DB
   await openDB();
-  notes = await dbGetAll();
-  renderSidebar();
-  if (notes.length > 0) {
-    const last = notes.sort((a, b) => b.updatedAt - a.updatedAt)[0];
-    openNote(last.id);
-  }
+  [notes, folders] = await Promise.all([dbGetAll(STORES.notes), dbGetAll(STORES.folders)]);
+
+  // Default view
+  setActiveSidebarItem('all');
+  updateViewLabel();
+  renderNotesList();
+  renderFolders();
+  populateFolderSelects();
+  setupSidebarResize();
+  setupDropZone();
+  setupKeyboard();
+
+  // Open last note
+  const active = notes.filter(n => !n.trashed).sort((a, b) => b.updatedAt - a.updatedAt)[0];
+  if (active) openNote(active.id);
 })();
 </script>
 </body>
